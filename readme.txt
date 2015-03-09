@@ -3,7 +3,7 @@ AVAEMixerSample
 Translated by OOPer in cooperation with shlab.jp, on 2015/2/28.
 
 Based on
-https://developer.apple.com/library/prerelease/ios/samplecode/AVAEMixerSample/Introduction/Intro.html#//apple_ref/doc/uid/TP40015134
+https://developer.apple.com/library/ios/samplecode/AVAEMixerSample/Introduction/Intro.html#//apple_ref/doc/uid/TP40015134
 2015-02-23.
 
 As this is a line-by-line translation from the original sample code, "redistribute the Apple Software in its entirety and without modifications" would apply. See LICENSE.txt .
@@ -15,6 +15,3 @@ REQUIREMENTS
 
 ### BUILD ###
 iOS 8.3 SDK, Xcode 6.3 beta2
-
-### RUNTIME ###
-iOS 8, iPad only
