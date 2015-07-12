@@ -116,7 +116,13 @@ class ViewController: UIViewController, AudioEngineDelegate {
         self.updateUIElements()
     }
     
-    @IBAction func togglePlayMarimba(AnyObject) {
+    func engineWasInterrupted() {
+        playing = false
+        recording = false
+        self.updateUIElements()
+    }
+    
+    @IBAction func togglePlayMarimba(_: AnyObject) {
         engine.toggleMarimba()
         
         self.styleButton(marimbaPlayButton, isPlaying: engine.marimbaPlayerIsPlaying)
@@ -130,7 +136,7 @@ class ViewController: UIViewController, AudioEngineDelegate {
         engine.marimbaPlayerPan = sender.value
     }
     
-    @IBAction func togglePlayDrums(AnyObject) {
+    @IBAction func togglePlayDrums(_: AnyObject) {
         engine.toggleDrums()
         
         self.styleButton(drumsPlayButton, isPlaying: engine.drumPlayerIsPlaying)
@@ -161,7 +167,7 @@ class ViewController: UIViewController, AudioEngineDelegate {
         self.updateButtonStates()
     }
     
-    @IBAction func rewindAction(AnyObject) {
+    @IBAction func rewindAction(_: AnyObject) {
         // rewind stops playback and recording
         recording = false
         playing = false
@@ -171,7 +177,7 @@ class ViewController: UIViewController, AudioEngineDelegate {
         self.updateButtonStates()
     }
     
-    @IBAction func playPauseAction(AnyObject) {
+    @IBAction func playPauseAction(_: AnyObject) {
         // playing/pausing stops recording toggles playback state
         recording = false
         playing = !playing
@@ -185,7 +191,7 @@ class ViewController: UIViewController, AudioEngineDelegate {
         self.updateButtonStates()
     }
     
-    @IBAction func recordAction(AnyObject) {
+    @IBAction func recordAction(_: AnyObject) {
         // recording stops playback and recording if we are already recording
         playing = false
         recording = !recording

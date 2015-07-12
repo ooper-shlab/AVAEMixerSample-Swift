@@ -32,6 +32,7 @@ import Accelerate
 @objc(AudioEngineDelegate)
 protocol AudioEngineDelegate: NSObjectProtocol {
     
+    optional func engineWasInterrupted()
     optional func engineConfigurationHasChanged()
     optional func mixerOutputFilePlayerHasStopped()
     
@@ -84,7 +85,6 @@ class AudioEngine: NSObject {
         
         _reverb = AVAudioUnitReverb()
         
-        
         _mixerOutputFilePlayer = AVAudioPlayerNode()
         super.init()
         
@@ -95,19 +95,27 @@ class AudioEngine: NSObject {
         // create an instance of the engine and attach the nodes
         self.createEngineAndAttachNodes()
         
-        var error: NSError? = nil
-        
         // load marimba loop
-        let marimbaLoopURL = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("marimbaLoop", ofType: "caf")!)!
-        let marimbaLoopFile = AVAudioFile(forReading: marimbaLoopURL, error: &error)
-        _marimbaLoopBuffer = AVAudioPCMBuffer(PCMFormat: marimbaLoopFile.processingFormat, frameCapacity: AVAudioFrameCount(marimbaLoopFile.length))
-        assert(marimbaLoopFile.readIntoBuffer(_marimbaLoopBuffer, error: &error), "couldn't read marimbaLoopFile into buffer, \(error!.localizedDescription)")
+        let marimbaLoopURL = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("marimbaLoop", ofType: "caf")!)
+        let marimbaLoopFile: AVAudioFile
+        do {
+            marimbaLoopFile = try AVAudioFile(forReading: marimbaLoopURL)
+            _marimbaLoopBuffer = AVAudioPCMBuffer(PCMFormat: marimbaLoopFile.processingFormat, frameCapacity: AVAudioFrameCount(marimbaLoopFile.length))
+            try marimbaLoopFile.readIntoBuffer(_marimbaLoopBuffer)
+        } catch let error as NSError {
+            fatalError("couldn't read marimbaLoopFile into buffer, \(error.localizedDescription)")
+        }
         
         // load drum loop
-        let drumLoopURL = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("drumLoop", ofType: "caf")!)!
-        let drumLoopFile = AVAudioFile(forReading: drumLoopURL, error: &error)
-        _drumLoopBuffer = AVAudioPCMBuffer(PCMFormat: drumLoopFile.processingFormat, frameCapacity: AVAudioFrameCount(drumLoopFile.length))
-        assert(drumLoopFile.readIntoBuffer(_drumLoopBuffer, error: &error), "couldn't read drumLoopFile into buffer, \(error!.localizedDescription)")
+        let drumLoopURL = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("drumLoop", ofType: "caf")!)
+        let drumLoopFile: AVAudioFile
+        do {
+            drumLoopFile = try AVAudioFile(forReading: drumLoopURL)
+            _drumLoopBuffer = AVAudioPCMBuffer(PCMFormat: drumLoopFile.processingFormat, frameCapacity: AVAudioFrameCount(drumLoopFile.length))
+            try drumLoopFile.readIntoBuffer(_drumLoopBuffer)
+        } catch let error as NSError {
+            fatalError("couldn't read drumLoopFile into buffer, \(error.localizedDescription)")
+        }
         
         // sign up for notifications from the engine if there's a hardware config change
         NSNotificationCenter.defaultCenter().addObserverForName(AVAudioEngineConfigurationChangeNotification, object: nil, queue: NSOperationQueue.mainQueue()) {note in
@@ -221,12 +229,18 @@ class AudioEngine: NSObject {
         2. An AVAudioSession error.
         3. The driver failed to start the hardware. */
         
-        var error: NSError? = nil
-        assert(_engine.startAndReturnError(&error), "couldn't start engine, \(error!.localizedDescription)")
+        if !_engine.running {
+            do {
+                try _engine.start()
+            } catch let error as NSError {
+                fatalError("couldn't start engine, \(error.localizedDescription)")
+            }
+        }
     }
     
     func toggleMarimba() {
         if !self.marimbaPlayerIsPlaying {
+            self.startEngine()
             _marimbaPlayer.scheduleBuffer(_marimbaLoopBuffer, atTime: nil, options: .Loops, completionHandler: nil)
             _marimbaPlayer.play()
         } else {
@@ -236,6 +250,7 @@ class AudioEngine: NSObject {
     
     func toggleDrums() {
         if !self.drumPlayerIsPlaying {
+            self.startEngine()
             _drumPlayer.scheduleBuffer(_drumLoopBuffer, atTime: nil, options: .Loops, completionHandler: nil)
             _drumPlayer.play()
         } else {
@@ -265,24 +280,30 @@ class AudioEngine: NSObject {
         Only one tap may be installed on any bus. Taps may be safely installed and removed while
         the engine is running. */
         
-        var error: NSError? = nil
         if _mixerOutputFileURL == nil {
             _mixerOutputFileURL = NSURL(string: NSTemporaryDirectory() + "mixerOutput.caf")
         }
         
         let mainMixer = _engine.mainMixerNode
-        let mixerOutputFile = AVAudioFile(forWriting: _mixerOutputFileURL, settings: mainMixer.outputFormatForBus(0).settings, error: &error)
-        assert(mixerOutputFile != nil, "mixerOutputFile is nil, \(error!.localizedDescription)")
-        
-        if !_engine.running {
-            self.startEngine()
+        let mixerOutputFile: AVAudioFile
+        do {
+            mixerOutputFile = try AVAudioFile(forWriting: _mixerOutputFileURL!, settings: mainMixer.outputFormatForBus(0).settings)
+        } catch let error as NSError {
+            fatalError("mixerOutputFile is nil, \(error.localizedDescription)")
         }
+        
+        self.startEngine()
         mainMixer.installTapOnBus(0, bufferSize: 4096, format: mainMixer.outputFormatForBus(0)) {buffer, when in
-            var error: NSError? = nil
             
             // as AVAudioPCMBuffer's are delivered this will write sequentially. The buffer's frameLength signifies how much of the buffer is to be written
             // IMPORTANT: The buffer format MUST match the file's processing format which is why outputFormatForBus: was used when creating the AVAudioFile object above
-            assert(mixerOutputFile.writeFromBuffer(buffer, error: &error), "error writing buffer data to file, \(error!.localizedDescription)")
+            do {
+                try mixerOutputFile.writeFromBuffer(buffer)
+            } catch let error as NSError {
+                fatalError("error writing buffer data to file, \(error.localizedDescription)")
+            } catch _ {
+                fatalError()
+            }
         }
         _isRecording = true
     }
@@ -296,20 +317,24 @@ class AudioEngine: NSObject {
     }
     
     func playRecordedFile() {
+        self.startEngine()
         if _mixerOutputFilePlayerIsPaused {
             _mixerOutputFilePlayer.play()
         } else {
             if _mixerOutputFileURL != nil {
-                var error: NSError? = nil
-                let recordedFile = AVAudioFile(forReading: _mixerOutputFileURL, error: &error)
-                assert(recordedFile != nil, "recordedFile is nil, \(error!.localizedDescription)")
+                let recordedFile: AVAudioFile
+                do {
+                    recordedFile = try AVAudioFile(forReading: _mixerOutputFileURL!)
+                } catch let error as NSError {
+                    fatalError("recordedFile is nil, \(error.localizedDescription)")
+                }
                 _mixerOutputFilePlayer.scheduleFile(recordedFile, atTime: nil) {
                     self._mixerOutputFilePlayerIsPaused = false
                     
                     // the data in the file has been scheduled but the player isn't actually done playing yet
                     // calculate the approximate time remaining for the player to finish playing and then dispatch the notification to the main thread
-                    let playerTime = self._mixerOutputFilePlayer.playerTimeForNodeTime(self._mixerOutputFilePlayer.lastRenderTime)
-                    let delayInSecs = Double(recordedFile.length - playerTime.sampleTime) / recordedFile.processingFormat.sampleRate
+                    let playerTime = self._mixerOutputFilePlayer.playerTimeForNodeTime(self._mixerOutputFilePlayer.lastRenderTime!)
+                    let delayInSecs = Double(recordedFile.length - playerTime!.sampleTime) / recordedFile.processingFormat.sampleRate
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(delayInSecs) * Int64(NSEC_PER_SEC)), dispatch_get_main_queue()) {
                         self.delegate?.mixerOutputFilePlayerHasStopped?()
                         self._mixerOutputFilePlayer.stop()
@@ -444,24 +469,26 @@ class AudioEngine: NSObject {
         
         // Configure the audio session
         let sessionInstance = AVAudioSession.sharedInstance()
-        var error: NSError? = nil
         
         // set the session category
-        var success = sessionInstance.setCategory(AVAudioSessionCategoryPlayAndRecord, error: &error)
-        if !success {
-            NSLog("Error setting AVAudioSession category! \(error!.localizedDescription)\n")
+        do {
+            try sessionInstance.setCategory(AVAudioSessionCategoryPlayback)
+        } catch let error as NSError {
+            NSLog("Error setting AVAudioSession category! \(error.localizedDescription)\n")
         }
         
         let hwSampleRate = 44100.0
-        success = sessionInstance.setPreferredSampleRate(hwSampleRate, error: &error)
-        if !success {
-            NSLog("Error setting preferred sample rate! \(error!.localizedDescription)\n")
+        do {
+            try sessionInstance.setPreferredSampleRate(hwSampleRate)
+        } catch let error as NSError {
+            NSLog("Error setting preferred sample rate! \(error.localizedDescription)\n")
         }
         
         let ioBufferDuration: NSTimeInterval = 0.0029
-        success = sessionInstance.setPreferredIOBufferDuration(ioBufferDuration, error: &error)
-        if !success {
-            NSLog("Error setting preferred io buffer duration! \(error!.localizedDescription)\n")
+        do {
+            try sessionInstance.setPreferredIOBufferDuration(ioBufferDuration)
+        } catch let error as NSError {
+            NSLog("Error setting preferred io buffer duration! \(error.localizedDescription)\n")
         }
         
         // add interruption handler
@@ -482,9 +509,10 @@ class AudioEngine: NSObject {
             object: sessionInstance)
         
         // activate the audio session
-        success = sessionInstance.setActive(true, error: &error)
-        if !success {
-            NSLog("Error setting session active! \(error!.localizedDescription)\n")
+        do {
+            try sessionInstance.setActive(true)
+        } catch let error as NSError {
+            NSLog("Error setting session active! \(error.localizedDescription)\n")
         }
     }
     
@@ -494,14 +522,18 @@ class AudioEngine: NSObject {
         NSLog("Session interrupted > --- %@ ---\n", theInterruptionType == AVAudioSessionInterruptionType.Began.rawValue ? "Begin Interruption" : "End Interruption")
         
         if theInterruptionType == AVAudioSessionInterruptionType.Began.rawValue {
-            // the engine will pause itself
+            _drumPlayer.stop()
+            _marimbaPlayer.stop()
+            self.stopPlayingRecordedFile()
+            self.stopRecordingMixerOutput()
+            self.delegate?.engineWasInterrupted?()
         }
         if theInterruptionType == AVAudioSessionInterruptionType.Ended.rawValue {
             // make sure to activate the session
-            var error: NSError? = nil
-            let success = AVAudioSession.sharedInstance().setActive(true, error: &error)
-            if !success {
-                NSLog("AVAudioSession set active failed with error: \(error!.localizedDescription)")
+            do {
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch let error as NSError {
+                NSLog("AVAudioSession set active failed with error: \(error.localizedDescription)")
             }
             
             // start the engine once again
@@ -510,8 +542,8 @@ class AudioEngine: NSObject {
     }
     
     func handleRouteChange(notification: NSNotification) {
-        var reasonValue = notification.userInfo![AVAudioSessionRouteChangeReasonKey] as! UInt
-        var routeDescription = notification.userInfo![AVAudioSessionRouteChangePreviousRouteKey] as! AVAudioSessionRouteDescription
+        let reasonValue = notification.userInfo![AVAudioSessionRouteChangeReasonKey] as! UInt
+        let routeDescription = notification.userInfo![AVAudioSessionRouteChangePreviousRouteKey] as! AVAudioSessionRouteDescription
         
         NSLog("Route change:")
         switch reasonValue {

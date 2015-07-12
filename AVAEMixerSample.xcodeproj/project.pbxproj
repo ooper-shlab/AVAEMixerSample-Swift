@@ -13,12 +13,11 @@
 		4CEA32DE1912EEA100ACCD65 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEA32DD1912EEA100ACCD65 /* AVFoundation.framework */; };
 		8271354D192EA4D60056B240 /* drumLoop.caf in Resources */ = {isa = PBXBuildFile; fileRef = 8271354B192EA4D60056B240 /* drumLoop.caf */; };
 		8271354E192EA4D60056B240 /* marimbaLoop.caf in Resources */ = {isa = PBXBuildFile; fileRef = 8271354C192EA4D60056B240 /* marimbaLoop.caf */; };
-		D72392251A9CAF7000461A91 /* CAUITransportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72392241A9CAF7000461A91 /* CAUITransportButton.swift */; };
-		D72392271A9CBAA700461A91 /* CAAVAudioUnitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D72392261A9CBAA700461A91 /* CAAVAudioUnitView.swift */; };
-		D7674EDF1A9E0185008B3640 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7674EDE1A9E0185008B3640 /* AudioEngine.swift */; };
-		D79867311AA1821F00E5D595 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79867301AA1821F00E5D595 /* ViewController.swift */; };
-		D79867331AA1D3CE00E5D595 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79867321AA1D3CE00E5D595 /* AppDelegate.swift */; };
-		D79867351AA1D55300E5D595 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = D79867341AA1D55300E5D595 /* readme.txt */; };
+		D71EE19B1B51E750007826E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71EE1961B51E750007826E5 /* AppDelegate.swift */; };
+		D71EE19C1B51E750007826E5 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71EE1971B51E750007826E5 /* AudioEngine.swift */; };
+		D71EE19D1B51E750007826E5 /* CAAVAudioUnitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71EE1981B51E750007826E5 /* CAAVAudioUnitView.swift */; };
+		D71EE19E1B51E750007826E5 /* CAUITransportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71EE1991B51E750007826E5 /* CAUITransportButton.swift */; };
+		D71EE19F1B51E750007826E5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71EE19A1B51E750007826E5 /* ViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,14 +29,14 @@
 		4CEA32DD1912EEA100ACCD65 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		8271354B192EA4D60056B240 /* drumLoop.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = drumLoop.caf; sourceTree = "<group>"; };
 		8271354C192EA4D60056B240 /* marimbaLoop.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = marimbaLoop.caf; sourceTree = "<group>"; };
-		D72392241A9CAF7000461A91 /* CAUITransportButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAUITransportButton.swift; sourceTree = "<group>"; };
-		D72392261A9CBAA700461A91 /* CAAVAudioUnitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAAVAudioUnitView.swift; sourceTree = "<group>"; };
-		D75D467B1A9BE47800454F90 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		D75D467C1A9BE47800454F90 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		D7674EDE1A9E0185008B3640 /* AudioEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
-		D79867301AA1821F00E5D595 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		D79867321AA1D3CE00E5D595 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D79867341AA1D55300E5D595 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		D71EE1961B51E750007826E5 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		D71EE1971B51E750007826E5 /* AudioEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		D71EE1981B51E750007826E5 /* CAAVAudioUnitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAAVAudioUnitView.swift; sourceTree = "<group>"; };
+		D71EE1991B51E750007826E5 /* CAUITransportButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAUITransportButton.swift; sourceTree = "<group>"; };
+		D71EE19A1B51E750007826E5 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		D71EE1A01B51F2D8007826E5 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		D71EE1A11B51F2D8007826E5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D71EE1A21B51F2D8007826E5 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,9 +54,9 @@
 		4CEA32A41912EDDE00ACCD65 = {
 			isa = PBXGroup;
 			children = (
-				D79867341AA1D55300E5D595 /* readme.txt */,
-				D75D467B1A9BE47800454F90 /* LICENSE.txt */,
-				D75D467C1A9BE47800454F90 /* README.md */,
+				D71EE1A21B51F2D8007826E5 /* readme.txt */,
+				D71EE1A01B51F2D8007826E5 /* LICENSE.txt */,
+				D71EE1A11B51F2D8007826E5 /* README.md */,
 				4CEA32B01912EDDE00ACCD65 /* AVAEMixerSample */,
 				821A3100196FB7CC00F56B5F /* Frameworks */,
 				4CEA32AF1912EDDE00ACCD65 /* Products */,
@@ -75,14 +74,14 @@
 		4CEA32B01912EDDE00ACCD65 /* AVAEMixerSample */ = {
 			isa = PBXGroup;
 			children = (
-				D7674EDE1A9E0185008B3640 /* AudioEngine.swift */,
-				D79867321AA1D3CE00E5D595 /* AppDelegate.swift */,
-				D79867301AA1821F00E5D595 /* ViewController.swift */,
-				D72392241A9CAF7000461A91 /* CAUITransportButton.swift */,
+				D71EE1971B51E750007826E5 /* AudioEngine.swift */,
+				D71EE1961B51E750007826E5 /* AppDelegate.swift */,
+				D71EE19A1B51E750007826E5 /* ViewController.swift */,
+				D71EE1991B51E750007826E5 /* CAUITransportButton.swift */,
 				4CEA32BD1912EDDE00ACCD65 /* Main_iPhone.storyboard */,
 				4CEA32C01912EDDE00ACCD65 /* Main_iPad.storyboard */,
 				4CEA32B11912EDDE00ACCD65 /* Supporting Files */,
-				D72392261A9CBAA700461A91 /* CAAVAudioUnitView.swift */,
+				D71EE1981B51E750007826E5 /* CAAVAudioUnitView.swift */,
 				4CEA32C31912EDDE00ACCD65 /* Images.xcassets */,
 			);
 			path = AVAEMixerSample;
@@ -143,7 +142,9 @@
 		4CEA32A51912EDDE00ACCD65 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = apple;
 			};
 			buildConfigurationList = 4CEA32A81912EDDE00ACCD65 /* Build configuration list for PBXProject "AVAEMixerSample" */;
@@ -169,7 +170,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D79867351AA1D55300E5D595 /* readme.txt in Resources */,
 				4CEA32C41912EDDE00ACCD65 /* Images.xcassets in Resources */,
 				4CEA32BF1912EDDE00ACCD65 /* Main_iPhone.storyboard in Resources */,
 				8271354D192EA4D60056B240 /* drumLoop.caf in Resources */,
@@ -185,11 +185,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D72392251A9CAF7000461A91 /* CAUITransportButton.swift in Sources */,
-				D72392271A9CBAA700461A91 /* CAAVAudioUnitView.swift in Sources */,
-				D79867311AA1821F00E5D595 /* ViewController.swift in Sources */,
-				D79867331AA1D3CE00E5D595 /* AppDelegate.swift in Sources */,
-				D7674EDF1A9E0185008B3640 /* AudioEngine.swift in Sources */,
+				D71EE19D1B51E750007826E5 /* CAAVAudioUnitView.swift in Sources */,
+				D71EE19F1B51E750007826E5 /* ViewController.swift in Sources */,
+				D71EE19C1B51E750007826E5 /* AudioEngine.swift in Sources */,
+				D71EE19B1B51E750007826E5 /* AppDelegate.swift in Sources */,
+				D71EE19E1B51E750007826E5 /* CAUITransportButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,6 +237,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -304,6 +305,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = AVAEMixerSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.apple.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 2;
@@ -319,6 +321,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = AVAEMixerSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.apple.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 2;
 			};

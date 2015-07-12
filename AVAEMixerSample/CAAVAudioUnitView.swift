@@ -20,9 +20,9 @@ private let kRoundedCornerRadius: CGFloat = 10
 @objc(CAAVAudioUnitView)
 class CAAVAudioUnitView: UIView {
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        let fillPath = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: .TopLeft | .TopRight, cornerRadii: CGSizeMake(kRoundedCornerRadius, kRoundedCornerRadius))
+        let fillPath = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: [.TopLeft, .TopRight], cornerRadii: CGSizeMake(kRoundedCornerRadius, kRoundedCornerRadius))
 
         let pathLayer = CAShapeLayer()
         pathLayer.path = fillPath.CGPath

@@ -21,6 +21,14 @@
 
 import UIKit
 
+/* This UIButton subclass programatically draws a transport button with a particular drawing style.
+It features a fill color that can be an accent color.
+If the button has the recordEnabledButtonStyle, it pulses on and off.
+
+These buttons resize themselves dynamically at runtime so that their bounds is a minimum of 44 x 44 pts
+in order to make them easy to press.
+The button image will draw at the original size specified in the storyboard
+*/
 @objc enum CAUITransportButtonStyle: Int {
     case rewindButtonStyle = 1
     case pauseButtonStyle
@@ -41,7 +49,7 @@ class CAUITransportButton: UIButton {
     // #define drawDoubleArrows 1		// uncomment to activate a double arrow drawing style instead of a bar with a single triangle
     
     //MARK: - Intialization
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         imageRect = self.bounds
@@ -83,29 +91,29 @@ class CAUITransportButton: UIButton {
         return CAShapeLayer.self
     }
     
-    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
-        if event.type == .Touches {
-            let tempColor = UIColor(CGColor: (self.layer as! CAShapeLayer).fillColor)!
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        if event!.type == .Touches {
+            let tempColor = UIColor(CGColor: (self.layer as! CAShapeLayer).fillColor!)
             (self.layer as! CAShapeLayer).fillColor = tempColor.colorWithAlphaComponent(0.5).CGColor
         }
         
         super.touchesBegan(touches, withEvent: event)
     }
     
-    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
-        if event.type == .Touches {
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        if event!.type == .Touches {
             (self.layer as! CAShapeLayer).fillColor = fillColor
         }
         
         super.touchesEnded(touches, withEvent: event)
     }
     
-    override func touchesCancelled(touches: Set<NSObject>!, withEvent event: UIEvent!) {
-        if event.type == .Touches {
+    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+        if event!.type == .Touches {
             (self.layer as! CAShapeLayer).fillColor = fillColor
         }
         
-        super.touchesEnded(touches, withEvent: event)
+        super.touchesEnded(touches!, withEvent: event)
     }
     
     private func toRadians(degrees: CGFloat) -> CGFloat {
@@ -163,7 +171,7 @@ class CAUITransportButton: UIButton {
     
     //MARK: - Drawing methods
     private func flash() {
-        let color = UIColor(CGColor: fillColor!)!.colorWithAlphaComponent(0.2)
+        let color = UIColor(CGColor: fillColor!).colorWithAlphaComponent(0.2)
         CATransaction.begin()
         let strokeAnim = CABasicAnimation(keyPath: "fillColor")
         strokeAnim.fromValue = (self.layer as! CAShapeLayer).fillColor
