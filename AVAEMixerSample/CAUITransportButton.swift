@@ -6,29 +6,21 @@
 //
 //
 /*
-    Copyright (C) 2015 Apple Inc. All Rights Reserved.
-    See LICENSE.txt for this sample’s licensing information
+ Copyright (C) 2015 Apple Inc. All Rights Reserved.
+ See LICENSE.txt for this sample’s licensing information
 
-    Abstract:
-    This UIButton subclass programatically draws a transport button with a particular drawing style.
-                It features a fill color that can be an accent color.
-                If the button has the recordEnabledButtonStyle, it pulses on and off.
+ Abstract:
+ This UIButton subclass programatically draws a transport button with a particular drawing style.
+         It features a fill color that can be an accent color.
+         If the button has the recordEnabledButtonStyle, it pulses on and off.
 
-                These buttons resize themselves dynamically at runtime so that their bounds is a minimum of 44 x 44 pts
-                in order to make them easy to press.
-                The button image will draw at the original size specified in the storyboard
-*/
+         These buttons resize themselves dynamically at runtime so that their bounds is a minimum of 44 x 44 pts
+         in order to make them easy to press.
+         The button image will draw at the original size specified in the storyboard
+ */
 
 import UIKit
 
-/* This UIButton subclass programatically draws a transport button with a particular drawing style.
-It features a fill color that can be an accent color.
-If the button has the recordEnabledButtonStyle, it pulses on and off.
-
-These buttons resize themselves dynamically at runtime so that their bounds is a minimum of 44 x 44 pts
-in order to make them easy to press.
-The button image will draw at the original size specified in the storyboard
-*/
 @objc enum CAUITransportButtonStyle: Int {
     case rewindButtonStyle = 1
     case pauseButtonStyle

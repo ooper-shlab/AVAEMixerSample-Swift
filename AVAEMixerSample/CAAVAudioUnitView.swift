@@ -10,7 +10,7 @@
     See LICENSE.txt for this sample’s licensing information
 
     Abstract:
-    AVAudioUnitView
+    This subclass of UIView adds rounded corners to the view
 */
 
 import UIKit
@@ -19,16 +19,17 @@ private let kRoundedCornerRadius: CGFloat = 10
 
 @objc(CAAVAudioUnitView)
 class CAAVAudioUnitView: UIView {
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        let fillPath = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: [.TopLeft, .TopRight], cornerRadii: CGSizeMake(kRoundedCornerRadius, kRoundedCornerRadius))
-
+    
+    override func setNeedsLayout() {
+        super.setNeedsLayout()
+        
+        let fillPath = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: UIRectCorner.AllCorners, cornerRadii: CGSizeMake(kRoundedCornerRadius, kRoundedCornerRadius))
+        
         let pathLayer = CAShapeLayer()
         pathLayer.path = fillPath.CGPath
         pathLayer.frame = fillPath.bounds
-
+        
         self.layer.mask = pathLayer
     }
-
+    
 }
