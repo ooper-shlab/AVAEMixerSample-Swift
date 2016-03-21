@@ -89,7 +89,7 @@ class SequencerViewController: AudioViewController {
     }
     
     @IBAction func setSequencerPlaybackRate(sender: UISlider) {
-        self.audioEngine?.sequencerCurrentPosition = Double(sender.value)
+        self.audioEngine?.sequencerPlaybackRate = sender.value
     }
     
 }
