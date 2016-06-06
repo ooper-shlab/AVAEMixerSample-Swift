@@ -623,18 +623,18 @@ class AudioEngine: NSObject {
         
         // add interruption handler
         NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "handleInterruption:",
+            selector: #selector(AudioEngine.handleInterruption(_:)),
             name: AVAudioSessionInterruptionNotification,
             object: sessionInstance)
         
         // we don't do anything special in the route change notification
         NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "handleRouteChange:",
+            selector: #selector(AudioEngine.handleRouteChange(_:)),
             name: AVAudioSessionRouteChangeNotification,
             object: sessionInstance)
         
         NSNotificationCenter.defaultCenter().addObserver(self,
-            selector: "handleMediaServicesReset:",
+            selector: #selector(AudioEngine.handleMediaServicesReset(_:)),
             name: AVAudioSessionMediaServicesWereResetNotification,
             object: sessionInstance)
         

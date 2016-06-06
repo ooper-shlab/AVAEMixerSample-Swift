@@ -30,7 +30,7 @@ class CAAVParameterView: UIView {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        let swipe = UISwipeGestureRecognizer(target: self, action: "swipeRecognizer:")
+        let swipe = UISwipeGestureRecognizer(target: self, action: #selector(CAAVParameterView.swipeRecognizer(_:)))
         swipe.direction = UISwipeGestureRecognizerDirection.Down
         self.addGestureRecognizer(swipe)
         

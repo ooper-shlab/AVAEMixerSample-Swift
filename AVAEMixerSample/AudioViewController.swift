@@ -39,7 +39,7 @@ class AudioViewController: UIViewController {
         if UIDevice.currentDevice().userInterfaceIdiom == .Pad {
             self.stackView.addArrangedSubview(self.parameterView)
         } else {
-            let titleViewTap = UITapGestureRecognizer(target: self, action: "showParameterView:")
+            let titleViewTap = UITapGestureRecognizer(target: self, action: #selector(AudioViewController.showParameterView(_:)))
             self.titleView.addGestureRecognizer(titleViewTap)
         }
         
