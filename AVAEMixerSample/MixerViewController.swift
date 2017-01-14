@@ -40,14 +40,14 @@ class MixerViewController: AudioViewController {
     override func updateUIElements() {
         self.masterVolumeSlider.value   = self.audioEngine?.outputVolume ?? 0.0
         self.recordButton.drawingStyle = .recordButtonStyle
-        self.recordButton.fillColor = UIColor(red: 255/255.0, green: 102/255.0, blue: 102/255.0, alpha: 1).CGColor
+        self.recordButton.fillColor = UIColor(red: 255/255.0, green: 102/255.0, blue: 102/255.0, alpha: 1).cgColor
     }
     
-    @IBAction func setMasterVolume(sender: UISlider) {
+    @IBAction func setMasterVolume(_ sender: UISlider) {
         self.audioEngine?.outputVolume = sender.value
     }
     
-    @IBAction func recordAction(sender: UISlider) {
+    @IBAction func recordAction(_ sender: UISlider) {
         self.recording = !self.recording
         
         if self.recording {

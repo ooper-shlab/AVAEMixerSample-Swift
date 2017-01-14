@@ -23,10 +23,10 @@ class CAAVAudioUnitView: UIView {
     override func setNeedsLayout() {
         super.setNeedsLayout()
         
-        let fillPath = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: UIRectCorner.AllCorners, cornerRadii: CGSizeMake(kRoundedCornerRadius, kRoundedCornerRadius))
+        let fillPath = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: UIRectCorner.allCorners, cornerRadii: CGSize(width: kRoundedCornerRadius, height: kRoundedCornerRadius))
         
         let pathLayer = CAShapeLayer()
-        pathLayer.path = fillPath.CGPath
+        pathLayer.path = fillPath.cgPath
         pathLayer.frame = fillPath.bounds
         
         self.layer.mask = pathLayer

@@ -22,7 +22,7 @@ import UIKit
 @objc(SequencerViewController)
 class SequencerViewController: AudioViewController {
     
-    private var _sequencerPositionSliderUpdateTimer: dispatch_source_t?
+    private var _sequencerPositionSliderUpdateTimer: DispatchSourceTimer?
     
     @IBOutlet private weak var sequencerPlaybackRateSlider: UISlider!
     @IBOutlet private weak var sequencerPositionSlider: UISlider!
@@ -41,26 +41,26 @@ class SequencerViewController: AudioViewController {
     
     override func updateUIElements() {
         self.sequencerPositionSlider.value = 0
-        self.sequencerPositionSlider.continuous = false
+        self.sequencerPositionSlider.isContinuous = false
         self.sequencerPlaybackRateSlider.value = self.audioEngine?.sequencerPlaybackRate ?? 0.0
         self.sequencerPlayButton.layer.cornerRadius = 5
         self.styleButton(sequencerPlayButton, isPlaying: self.audioEngine?.sequencerIsPlaying ?? false)
     }
     
     private func startTimer() {
-        _sequencerPositionSliderUpdateTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue())
+        _sequencerPositionSliderUpdateTimer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: 0), queue: DispatchQueue.main)
         if let sequencerPositionSliderUpdateTimer = _sequencerPositionSliderUpdateTimer {
-            dispatch_source_set_timer(sequencerPositionSliderUpdateTimer, DISPATCH_TIME_NOW, UInt64(0.1 * Double(NSEC_PER_SEC)), 0)
-            dispatch_source_set_event_handler(sequencerPositionSliderUpdateTimer) {
+            sequencerPositionSliderUpdateTimer.scheduleRepeating(deadline: .now(), interval: 0.1 * Double(NSEC_PER_SEC), leeway: .nanoseconds(0))
+            sequencerPositionSliderUpdateTimer.setEventHandler {
                 self.sequencerPositionSlider.value = Float(self.audioEngine?.sequencerCurrentPosition ?? 0.0)
             }
-            dispatch_resume(sequencerPositionSliderUpdateTimer)
+            sequencerPositionSliderUpdateTimer.resume()
         }
     }
     
     private func stopTimer() {
         if let sequencerPositionSliderUpdateTimer = _sequencerPositionSliderUpdateTimer {
-            dispatch_source_cancel(sequencerPositionSliderUpdateTimer)
+            sequencerPositionSliderUpdateTimer.cancel()
             _sequencerPositionSliderUpdateTimer = nil
         }
     }
@@ -81,14 +81,14 @@ class SequencerViewController: AudioViewController {
         }
     }
     
-    @IBAction func sequencerPositionSliderValueChanged(sender: UISlider) {
+    @IBAction func sequencerPositionSliderValueChanged(_ sender: UISlider) {
         if self.audioEngine?.sequencerIsPlaying ?? false {
             self.audioEngine?.sequencerCurrentPosition = Double(sender.value)
             self.startTimer()
         }
     }
     
-    @IBAction func setSequencerPlaybackRate(sender: UISlider) {
+    @IBAction func setSequencerPlaybackRate(_ sender: UISlider) {
         self.audioEngine?.sequencerPlaybackRate = sender.value
     }
     

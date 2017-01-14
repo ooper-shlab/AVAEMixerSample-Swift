@@ -38,7 +38,7 @@ class DistortionViewController: AudioViewController {
         self.distortionWetDrySlider.value = self.audioEngine?.distortionWetDryMix ?? 0.0
     }
     
-    @IBAction func setWetDryMix(sender: UISlider) {
+    @IBAction func setWetDryMix(_ sender: UISlider) {
         self.audioEngine?.distortionWetDryMix = sender.value
     }
     

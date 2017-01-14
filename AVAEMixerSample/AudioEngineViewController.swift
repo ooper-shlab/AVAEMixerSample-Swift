@@ -33,9 +33,9 @@ class AudioEngineViewController: UIViewController, AudioEngineDelegate {
     
     private func setupUI() {
         //apply a drop shadow to the boxes
-        self.shadowView.layer.shadowColor = UIColor.blackColor().CGColor
+        self.shadowView.layer.shadowColor = UIColor.black.cgColor
         self.shadowView.layer.shadowRadius = 10.0
-        self.shadowView.layer.shadowOffset = CGSizeMake(0.0, 5.0)
+        self.shadowView.layer.shadowOffset = CGSize(width: 0.0, height: 5.0)
         self.shadowView.layer.shadowOpacity = 0.5
     }
     
@@ -44,7 +44,7 @@ class AudioEngineViewController: UIViewController, AudioEngineDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         //initialize
         if self.audioEngine == nil {
             self.audioEngine = AudioEngine()
@@ -52,7 +52,7 @@ class AudioEngineViewController: UIViewController, AudioEngineDelegate {
         }
         
         //Pass the audio engine to all the audioviewcontrollers
-        if let controller = segue.destinationViewController as? AudioViewController {
+        if let controller = segue.destination as? AudioViewController {
             controller.audioEngine = self.audioEngine
         }
         

@@ -32,7 +32,7 @@ class PlayerViewController: AudioViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(PlayerViewController.enableToggle(_:)), name: kRecordingCompletedNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(PlayerViewController.enableToggle(_:)), name: NSNotification.Name(rawValue: kRecordingCompletedNotification), object: nil)
     }
     
     override func didReceiveMemoryWarning() {
@@ -40,7 +40,7 @@ class PlayerViewController: AudioViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func toggleBuffer(sender: UISegmentedControl) {
+    @IBAction func toggleBuffer(_ sender: UISegmentedControl) {
         self.audioEngine?.toggleBuffer(sender.selectedSegmentIndex != 0)
     }
     
@@ -49,16 +49,16 @@ class PlayerViewController: AudioViewController {
         self.styleButton(playerPlayButton, isPlaying: self.audioEngine?.playerIsPlaying ?? false)
     }
     
-    @IBAction func setVolume(sender: UISlider) {
+    @IBAction func setVolume(_ sender: UISlider) {
         self.audioEngine?.playerVolume = sender.value
     }
     
-    @IBAction func setPan(sender: UISlider) {
+    @IBAction func setPan(_ sender: UISlider) {
         self.audioEngine?.playerPan = sender.value
     }
     
-    @objc func enableToggle(notification: NSNotification) {
-        self.playerSegmentControl.setEnabled(true, forSegmentAtIndex: 1)
+    @objc func enableToggle(_ notification: Notification) {
+        self.playerSegmentControl.setEnabled(true, forSegmentAt: 1)
     }
     
     override func updateUIElements() {

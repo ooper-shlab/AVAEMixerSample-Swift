@@ -50,10 +50,10 @@ class CAUITransportButton: UIButton {
         
         if widthDelta > 0 || heightDelta > 0 {
             // update the frame
-            let bounds = CGRectMake(0, 0, widthDelta > 0 ? kMinimumButtonSize : imageRect.size.width, heightDelta > 0 ? kMinimumButtonSize : imageRect.size.height)
-            let frame  = CGRectMake(widthDelta > 0 ? round(self.frame.origin.x - (widthDelta / 2)) : self.frame.origin.x,
-                heightDelta > 0 ? round(self.frame.origin.y - (heightDelta / 2)) : self.frame.origin.y,
-                bounds.size.width, bounds.size.height)
+            let bounds = CGRect(x: 0, y: 0, width: widthDelta > 0 ? kMinimumButtonSize : imageRect.size.width, height: heightDelta > 0 ? kMinimumButtonSize : imageRect.size.height)
+            let frame  = CGRect(x: widthDelta > 0 ? round(self.frame.origin.x - (widthDelta / 2)) : self.frame.origin.x,
+                y: heightDelta > 0 ? round(self.frame.origin.y - (heightDelta / 2)) : self.frame.origin.y,
+                width: bounds.size.width, height: bounds.size.height)
             
             self.frame = frame
             self.bounds = bounds
@@ -69,46 +69,46 @@ class CAUITransportButton: UIButton {
         
         if widthDelta > 0 || heightDelta > 0 {
             // update the frame
-            let bounds = CGRectMake(0, 0, widthDelta > 0 ? kMinimumButtonSize : imageRect.size.width, heightDelta > 0 ? kMinimumButtonSize : imageRect.size.height)
-            let theFrame  = CGRectMake(widthDelta > 0 ? round(self.frame.origin.x - (widthDelta / 2)) : self.frame.origin.x,
-                heightDelta > 0 ? round(self.frame.origin.y - (heightDelta / 2)) : self.frame.origin.y,
-                bounds.size.width, bounds.size.height)
+            let bounds = CGRect(x: 0, y: 0, width: widthDelta > 0 ? kMinimumButtonSize : imageRect.size.width, height: heightDelta > 0 ? kMinimumButtonSize : imageRect.size.height)
+            let theFrame  = CGRect(x: widthDelta > 0 ? round(self.frame.origin.x - (widthDelta / 2)) : self.frame.origin.x,
+                y: heightDelta > 0 ? round(self.frame.origin.y - (heightDelta / 2)) : self.frame.origin.y,
+                width: bounds.size.width, height: bounds.size.height)
             
             self.frame  = theFrame
             self.bounds = bounds
         }
     }
     
-    override class func layerClass() -> AnyClass {
+    override class var layerClass : AnyClass {
         return CAShapeLayer.self
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        if event!.type == .Touches {
-            let tempColor = UIColor(CGColor: (self.layer as! CAShapeLayer).fillColor!)
-            (self.layer as! CAShapeLayer).fillColor = tempColor.colorWithAlphaComponent(0.5).CGColor
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if event!.type == .touches {
+            let tempColor = UIColor(cgColor: (self.layer as! CAShapeLayer).fillColor!)
+            (self.layer as! CAShapeLayer).fillColor = tempColor.withAlphaComponent(0.5).cgColor
         }
         
-        super.touchesBegan(touches, withEvent: event)
+        super.touchesBegan(touches, with: event)
     }
     
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        if event!.type == .Touches {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if event!.type == .touches {
             (self.layer as! CAShapeLayer).fillColor = fillColor
         }
         
-        super.touchesEnded(touches, withEvent: event)
+        super.touchesEnded(touches, with: event)
     }
     
-    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
-        if event!.type == .Touches {
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if event!.type == .touches {
             (self.layer as! CAShapeLayer).fillColor = fillColor
         }
         
-        super.touchesEnded(touches!, withEvent: event)
+        super.touchesEnded(touches, with: event)
     }
     
-    private func toRadians(degrees: CGFloat) -> CGFloat {
+    private func toRadians(_ degrees: CGFloat) -> CGFloat {
         return (degrees * CGFloat(M_PI))/180.0
     }
     
@@ -121,10 +121,10 @@ class CAUITransportButton: UIButton {
                 let path = self.newPathRefForStyle(style)
                 (self.layer as! CAShapeLayer).path = path
                 
-                self.backgroundColor = UIColor.clearColor()
+                self.backgroundColor = UIColor.clear
                 
                 if style == .recordEnabledButtonStyle {
-                    UIView.animateWithDuration(1, delay: 0, options: .CurveLinear,
+                    UIView.animate(withDuration: 1, delay: 0, options: .curveLinear,
                         animations: {
                             (self.layer as! CAShapeLayer).strokeColor = self.fillColor
                             (self.layer as! CAShapeLayer).fillColor = self.fillColor
@@ -134,9 +134,9 @@ class CAUITransportButton: UIButton {
                     
                 } else if style == .recordButtonStyle {
                     (self.layer as! CAShapeLayer).removeAllAnimations()
-                    UIView.animateWithDuration(1, delay: 0, options: .CurveLinear,
+                    UIView.animate(withDuration: 1, delay: 0, options: .curveLinear,
                         animations: {
-                            (self.layer as! CAShapeLayer).strokeColor = UIColor.clearColor().CGColor
+                            (self.layer as! CAShapeLayer).strokeColor = UIColor.clear.cgColor
                             (self.layer as! CAShapeLayer).fillColor = self.fillColor
                             (self.layer as! CAShapeLayer).lineWidth = 0
                         }, completion: nil)
@@ -163,11 +163,11 @@ class CAUITransportButton: UIButton {
     
     //MARK: - Drawing methods
     private func flash() {
-        let color = UIColor(CGColor: fillColor!).colorWithAlphaComponent(0.2)
+        let color = UIColor(cgColor: fillColor!).withAlphaComponent(0.2)
         CATransaction.begin()
         let strokeAnim = CABasicAnimation(keyPath: "fillColor")
         strokeAnim.fromValue = (self.layer as! CAShapeLayer).fillColor
-        strokeAnim.toValue = color.CGColor
+        strokeAnim.toValue = color.cgColor
         strokeAnim.duration = 2.0
         strokeAnim.repeatCount = 0
         strokeAnim.autoreverses = true
@@ -176,17 +176,17 @@ class CAUITransportButton: UIButton {
                 self.flash()
             }
         }
-        (self.layer as! CAShapeLayer).addAnimation(strokeAnim, forKey: "animateStrokeColor")
+        (self.layer as! CAShapeLayer).add(strokeAnim, forKey: "animateStrokeColor")
         CATransaction.commit()
     }
     
-    private func newPathRefForStyle(style: CAUITransportButtonStyle) -> CGPath? {
+    private func newPathRefForStyle(_ style: CAUITransportButtonStyle) -> CGPath? {
         var path: CGPath? = nil
         var size = min(imageRect.size.width, imageRect.size.height)
         
         switch style {
         case .rewindButtonStyle:
-            let tempPath = CGPathCreateMutable()
+            let tempPath = CGMutablePath()
             #if drawDoubleArrows
                 var height = size * 0.613
                 let width  = size
@@ -202,33 +202,33 @@ class CAUITransportButton: UIButton {
             
             #if drawDoubleArrows
                 // first arrow
-                CGPathAddArc(tempPath, nil, radius, yOffset + height/2, radius, toRadians(120), toRadians(240), false)
-                CGPathAddArc(tempPath, nil, 0.5 * width - radius, yOffset + radius, radius, toRadians(240), toRadians(0), false)
-                CGPathAddArc(tempPath, nil, 0.5 * width - radius, yOffset + height - radius, radius, toRadians(0), toRadians(120), false)
-                CGPathCloseSubpath(tempPath)
+                tempPath.addArc(center: CGPoint(x: radius, y: yOffset + height/2), radius: radius, startAngle: toRadians(120), endAngle: toRadians(240), clockwise: false)
+                tempPath.addArc(center: CGPoint(x: 0.5 * width - radius, y: yOffset + radius), radius: radius, startAngle: toRadians(240), endAngle: toRadians(0), clockwise: false)
+                tempPath.addArc(center: CGPoint(x: 0.5 * width - radius, y: yOffset + height - radius), radius: radius, startAngle: toRadians(0), endAngle: toRadians(120), clockwise: false)
+                tempPath.closeSubpath()
                 
                 // second arrow
-                CGPathMoveToPoint(tempPath, nil, 0.5*size, yOffset + height/2)
-                CGPathAddArc(tempPath, nil, 0.5*size + radius, yOffset + height/2, radius, toRadians(180), toRadians(240), false)
-                CGPathAddArc(tempPath, nil, width - radius, yOffset + radius, radius, toRadians(240), toRadians(0), false)
-                CGPathAddArc(tempPath, nil, width - radius, yOffset + height - radius, radius, toRadians(0), toRadians(120), false)
-                CGPathAddArc(tempPath, nil, 0.5*size + radius, yOffset + height/2, radius, toRadians(120), toRadians(180), false)
+                tempPath.move(to: CGPoint(x: 0.5*size, y: yOffset + height/2))
+                tempPath.addArc(center: CGPoint(x: 0.5*size + radius, y: yOffset + height/2), radius: radius, startAngle: toRadians(180), endAngle: toRadians(240), clockwise: false)
+                tempPath.addArc(center: CGPoint(x: width - radius, y: yOffset + radius), radius: radius, startAngle: toRadians(240), endAngle: toRadians(0), clockwise: false)
+                tempPath.addArc(center: CGPoint(x: width - radius, y: yOffset + height - radius), radius: radius, startAngle: toRadians(0), endAngle: toRadians(120), clockwise: false)
+                tempPath.addArc(center: CGPoint(x: 0.5*size + radius, y: yOffset + height/2), radius: radius, startAngle: toRadians(120), endAngle: toRadians(180), clockwise: false)
             #else
                 var xOffset = 0.062 * size
-                CGPathAddRoundedRect(tempPath, nil, CGRectMake(0, yOffset, xOffset, height), radius, radius)
+                tempPath.addRoundedRect(in: CGRect(x: 0, y: yOffset, width: xOffset, height: height), cornerWidth: radius, cornerHeight: radius)
                 
                 radius = (size * 0.0631)/2
                 xOffset += 0.006 * size
                 
-                CGPathAddArc(tempPath, nil, xOffset + radius, yOffset + height/2, radius, toRadians(120), toRadians(240), false)
-                CGPathAddArc(tempPath, nil, xOffset + width - radius, yOffset + radius, radius, toRadians(240), toRadians(0), false)
-                CGPathAddArc(tempPath, nil, xOffset + width - radius, yOffset + height - radius, radius, toRadians(0), toRadians(120), false)
+                tempPath.addArc(center: CGPoint(x: xOffset + radius, y: yOffset + height/2), radius: radius, startAngle: toRadians(120), endAngle: toRadians(240), clockwise: false)
+                tempPath.addArc(center: CGPoint(x: xOffset + width - radius, y: yOffset + radius), radius: radius, startAngle: toRadians(240), endAngle: toRadians(0), clockwise: false)
+                tempPath.addArc(center: CGPoint(x: xOffset + width - radius, y: yOffset + height - radius), radius: radius, startAngle: toRadians(0), endAngle: toRadians(120), clockwise: false)
             #endif
-            CGPathCloseSubpath(tempPath)
+            tempPath.closeSubpath()
             
             path = tempPath
         case .pauseButtonStyle:
-            let tempPath = CGPathCreateMutable()
+            let tempPath = CGMutablePath()
             var height = size * 0.857
             let width  = size * 0.7452
             let barWidth = size * 0.2776
@@ -238,12 +238,12 @@ class CAUITransportButton: UIButton {
             
             height = round(height)
             
-            CGPathAddRoundedRect(tempPath, nil, CGRectMake(xOffset, yOffset, barWidth, height), radius, radius)
-            CGPathAddRoundedRect(tempPath, nil, CGRectMake(round(imageRect.size.width - xOffset - barWidth), yOffset, barWidth, height), radius, radius)
+            tempPath.addRoundedRect(in: CGRect(x: xOffset, y: yOffset, width: barWidth, height: height), cornerWidth: radius, cornerHeight: radius)
+            tempPath.addRoundedRect(in: CGRect(x: round(imageRect.size.width - xOffset - barWidth), y: yOffset, width: barWidth, height: height), cornerWidth: radius, cornerHeight: radius)
             
             path = tempPath
         case .playButtonStyle:
-            let tempPath = CGPathCreateMutable()
+            let tempPath = CGMutablePath()
             var height = size * 0.857
             let width  = size * 0.6538
             let xOffset = round((imageRect.size.width - width)/2)
@@ -252,25 +252,25 @@ class CAUITransportButton: UIButton {
             
             height = round(height)
             
-            CGPathAddArc(tempPath, nil, xOffset + radius, yOffset + radius, radius, toRadians(180), toRadians(300), false)
-            CGPathAddArc(tempPath, nil, xOffset + width - radius, yOffset + height/2, radius, toRadians(300), toRadians(60), false)
-            CGPathAddArc(tempPath, nil, xOffset + radius, yOffset + height - radius, radius, toRadians(60), toRadians(180), false)
-            CGPathCloseSubpath(tempPath)
+            tempPath.addArc(center: CGPoint(x: xOffset + radius, y: yOffset + radius), radius: radius, startAngle: toRadians(180), endAngle: toRadians(300), clockwise: false)
+            tempPath.addArc(center: CGPoint(x: xOffset + width - radius, y: yOffset + height/2), radius: radius, startAngle: toRadians(300), endAngle: toRadians(60), clockwise: false)
+            tempPath.addArc(center: CGPoint(x: xOffset + radius, y: yOffset + height - radius), radius: radius, startAngle: toRadians(60), endAngle: toRadians(180), clockwise: false)
+            tempPath.closeSubpath()
             path = tempPath
         case .recordButtonStyle, .recordEnabledButtonStyle:
             size *= 0.7825
-            let elipseRect = CGRectMake((imageRect.size.width - size)/2, (imageRect.size.height - size)/2, size, size)
+            let elipseRect = CGRect(x: (imageRect.size.width - size)/2, y: (imageRect.size.height - size)/2, width: size, height: size)
             
-            path = CGPathCreateWithEllipseInRect(elipseRect, nil)
+            path = CGPath(ellipseIn: elipseRect, transform: nil)
         case .stopButtonStyle:
-            let tempPath = CGPathCreateMutable()
+            let tempPath = CGMutablePath()
             var height = size * 0.857
             let offset = round((imageRect.size.width - height)/2)
             let radius = (size * 0.0397)/2
             
             height = round(height)
             
-            CGPathAddRoundedRect(tempPath, nil, CGRectMake(offset, offset, height, height), radius, radius)
+            tempPath.addRoundedRect(in: CGRect(x: offset, y: offset, width: height, height: height), cornerWidth: radius, cornerHeight: radius)
             
             path = tempPath
         }

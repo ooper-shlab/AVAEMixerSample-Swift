@@ -39,11 +39,11 @@ class InstrumentViewController: AudioViewController {
         self.effectVolumeSlider.value = self.audioEngine?.samplerEffectVolume ?? 0.0
     }
     
-    @IBAction func setSamplerDirectVolume(sender: UISlider) {
+    @IBAction func setSamplerDirectVolume(_ sender: UISlider) {
         self.audioEngine?.samplerDirectVolume = sender.value
     }
     
-    @IBAction func setEffectVolime(sender: UISlider) {
+    @IBAction func setEffectVolime(_ sender: UISlider) {
         self.audioEngine?.samplerEffectVolume = sender.value
     }
     

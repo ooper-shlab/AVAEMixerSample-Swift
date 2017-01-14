@@ -33,17 +33,17 @@ let kRecordingCompletedNotification = "RecordingCompletedNotification";
 @objc(AudioEngineDelegate)
 protocol AudioEngineDelegate: NSObjectProtocol {
     
-    optional func engineWasInterrupted()
-    optional func engineConfigurationHasChanged()
-    optional func mixerOutputFilePlayerHasStopped()
+    @objc optional func engineWasInterrupted()
+    @objc optional func engineConfigurationHasChanged()
+    @objc optional func mixerOutputFilePlayerHasStopped()
     
 }
 
 @objc(AudioEngine)
 class AudioEngine: NSObject {
     
-    private var _distortionPreset: AVAudioUnitDistortionPreset = .DrumsBitBrush
-    private var _reverbPreset: AVAudioUnitReverbPreset = .SmallRoom
+    private var _distortionPreset: AVAudioUnitDistortionPreset = .drumsBitBrush
+    private var _reverbPreset: AVAudioUnitReverbPreset = .smallRoom
     
     weak var delegate: AudioEngineDelegate?
     
@@ -64,7 +64,7 @@ class AudioEngine: NSObject {
     private var _playerLoopBuffer: AVAudioPCMBuffer!
     
     // for the node tap
-    private var _mixerOutputFileURL: NSURL?
+    private var _mixerOutputFileURL: URL?
     private var _isRecording: Bool = false
     private var _isRecordingSelected: Bool = false
     
@@ -93,10 +93,10 @@ class AudioEngine: NSObject {
         
         /* The AVAudioUnitSampler class encapsulates Apple's Sampler Audio Unit. The sampler audio unit can be configured by loading different types of instruments such as an “.aupreset” file, a DLS or SF2 sound bank, an EXS24 instrument, a single audio file or with an array of audio files. The output is a single stereo bus. */
         
-        let bankURL = NSURL(fileURLWithPath: NSBundle(forClass: self.dynamicType).pathForResource("gs_instruments", ofType: "dls")!)
+        let bankURL = URL(fileURLWithPath: Bundle(for: type(of: self)).path(forResource: "gs_instruments", ofType: "dls")!)
         _sampler = AVAudioUnitSampler()
         do {
-            try _sampler.loadSoundBankInstrumentAtURL(bankURL, program: 0, bankMSB: 0x79, bankLSB: 0)
+            try _sampler.loadSoundBankInstrument(at: bankURL, program: 0, bankMSB: 0x79, bankLSB: 0)
         } catch _ {}
         
         /* An AVAudioUnitEffect that implements a multi-stage distortion effect */
@@ -110,12 +110,12 @@ class AudioEngine: NSObject {
         _reverb = AVAudioUnitReverb()
         
         // load drumloop into a buffer for the playernode
-        let drumLoopURL = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("drumLoop", ofType: "caf")!)
+        let drumLoopURL = URL(fileURLWithPath: Bundle.main.path(forResource: "drumLoop", ofType: "caf")!)
         let drumLoopFile = try! AVAudioFile(forReading: drumLoopURL)
-        _playerLoopBuffer = AVAudioPCMBuffer(PCMFormat: drumLoopFile.processingFormat, frameCapacity: AVAudioFrameCount(drumLoopFile.length))
+        _playerLoopBuffer = AVAudioPCMBuffer(pcmFormat: drumLoopFile.processingFormat, frameCapacity: AVAudioFrameCount(drumLoopFile.length))
         do {
             //        success = [drumLoopFile readIntoBuffer:_playerLoopBuffer error:&error];
-            try drumLoopFile.readIntoBuffer(_playerLoopBuffer)
+            try drumLoopFile.read(into: _playerLoopBuffer)
         } catch let error as NSError {
             //        NSAssert(success, @"couldn't read drumLoopFile into buffer, %@", [error localizedDescription]);
             fatalError("couldn't read drumLoopFile into buffer, \(error.localizedDescription)")
@@ -136,14 +136,14 @@ class AudioEngine: NSObject {
         
         // settings for effects units
         _reverb.wetDryMix = 100;
-        _reverb.loadFactoryPreset(AVAudioUnitReverbPreset.MediumHall)
+        _reverb.loadFactoryPreset(AVAudioUnitReverbPreset.mediumHall)
         
-        _distortion.loadFactoryPreset(AVAudioUnitDistortionPreset.DrumsBitBrush)
+        _distortion.loadFactoryPreset(AVAudioUnitDistortionPreset.drumsBitBrush)
         _distortion.wetDryMix = 100;
         self.samplerEffectVolume = 0.0;
         
         // sign up for notifications from the engine if there's a hardware config change
-        NSNotificationCenter.defaultCenter().addObserverForName(AVAudioEngineConfigurationChangeNotification, object: nil, queue: NSOperationQueue.mainQueue()) {note in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.AVAudioEngineConfigurationChange, object: nil, queue: OperationQueue.main) {note in
             
             // if we've received this notification, something has changed and the engine has been stopped
             // re-wire all the connections and start the engine
@@ -151,7 +151,7 @@ class AudioEngine: NSObject {
             self._isConfigChangePending = true
             
             if !self._isSessionInterrupted {
-                NSLog("Received a %@ notification!", AVAudioEngineConfigurationChangeNotification)
+                NSLog("Received a \(NSNotification.Name.AVAudioEngineConfigurationChange) notification!")
                 NSLog("Re-wiring connections and starting once again")
                 self.makeEngineConnections()
                 self.startEngine()
@@ -176,11 +176,11 @@ class AudioEngine: NSObject {
         _sequencer = AVAudioSequencer(audioEngine: _engine)
         
         // load sequencer loop
-        guard let midiFileURL = NSBundle(forClass: self.dynamicType).URLForResource("bluesyRiff", withExtension: "mid") else {
+        guard let midiFileURL = Bundle(for: type(of: self)).url(forResource: "bluesyRiff", withExtension: "mid") else {
             fatalError("couldn't find midi file")
         }
         do {
-            try _sequencer!.loadFromURL(midiFileURL, options: AVMusicSequenceLoadOptions.SMF_PreserveTracks)
+            try _sequencer!.load(from: midiFileURL, options: AVMusicSequenceLoadOptions())
         } catch let error as NSError {
             fatalError("couldn't load midi file, \(error.localizedDescription)")
         }
@@ -188,8 +188,8 @@ class AudioEngine: NSObject {
         // enable looping on all the sequencer tracks
         _sequencerTrackLengthSeconds = 0;
         _sequencer!.tracks.forEach{track in
-            track.loopingEnabled = true;
-            track.numberOfLoops = AVMusicTrackLoopCount.Forever.rawValue
+            track.isLoopingEnabled = true;
+            track.numberOfLoops = AVMusicTrackLoopCount.forever.rawValue
             let trackLengthInSeconds = track.lengthInSeconds
             if _sequencerTrackLengthSeconds < trackLengthInSeconds {
                 _sequencerTrackLengthSeconds = trackLengthInSeconds
@@ -221,10 +221,10 @@ class AudioEngine: NSObject {
         externally to the engine, but are not usable until they are attached to the engine via
         the attachNode method. */
         
-        _engine.attachNode(_sampler)
-        _engine.attachNode(_distortion)
-        _engine.attachNode(_reverb)
-        _engine.attachNode(_player)
+        _engine.attach(_sampler)
+        _engine.attach(_distortion)
+        _engine.attach(_reverb)
+        _engine.attach(_player)
     }
     
     private func makeEngineConnections() {
@@ -268,7 +268,7 @@ class AudioEngine: NSObject {
         
         // fan out the sampler to mixer input 1 and distortion effect
         let destinationNodes = [AVAudioConnectionPoint(node: _engine.mainMixerNode, bus: 1), AVAudioConnectionPoint(node: _distortion, bus: 0)]
-        _engine.connect(_sampler, toConnectionPoints: destinationNodes, fromBus: 0, format: stereoFormat)
+        _engine.connect(_sampler, to: destinationNodes, fromBus: 0, format: stereoFormat)
     }
     
     private func startEngine() {
@@ -288,7 +288,7 @@ class AudioEngine: NSObject {
         2. An AVAudioSession error.
         3. The driver failed to start the hardware. */
         
-        if !_engine.running {
+        if !_engine.isRunning {
             do {
                 try _engine.start()
             } catch let error as NSError {
@@ -314,7 +314,7 @@ class AudioEngine: NSObject {
     }
     
     var sequencerIsPlaying: Bool {
-        return _sequencer?.playing ?? false
+        return _sequencer?.isPlaying ?? false
     }
     
     var sequencerCurrentPosition: Double {
@@ -343,12 +343,12 @@ class AudioEngine: NSObject {
     var samplerDirectVolume: Float {
         set {
             // get all output connection points from sampler bus 0
-            let connectionPoints = _engine.outputConnectionPointsForNode(_sampler, outputBus: 0)
+            let connectionPoints = _engine.outputConnectionPoints(for: _sampler, outputBus: 0)
             for conn in connectionPoints {
                 // if the destination node represents the main mixer, then this is the direct path
                 if conn.node! === _engine.mainMixerNode {
                     // get the corresponding mixing destination object and set the mixer input bus volume
-                    if let mixingDestination = _sampler.destinationForMixer(conn.node!, bus: conn.bus) {
+                    if let mixingDestination = _sampler.destination(forMixer: conn.node!, bus: conn.bus) {
                         mixingDestination.volume = newValue
                     }
                     break
@@ -358,10 +358,10 @@ class AudioEngine: NSObject {
         
         get {
             var volume: Float = 0.0
-            let connectionPoint = _engine.outputConnectionPointsForNode(_sampler, outputBus: 0)
+            let connectionPoint = _engine.outputConnectionPoints(for: _sampler, outputBus: 0)
             for conn in connectionPoint {
                 if conn.node! === _engine.mainMixerNode {
-                    if let mixingDestination = _sampler.destinationForMixer(conn.node!, bus: conn.bus) {
+                    if let mixingDestination = _sampler.destination(forMixer: conn.node!, bus: conn.bus) {
                         volume = mixingDestination.volume
                     }
                     break
@@ -375,12 +375,12 @@ class AudioEngine: NSObject {
     var samplerEffectVolume: Float {
         set {
             // get all output connection points from sampler bus 0
-            let connectionPoints = _engine.outputConnectionPointsForNode(_distortion, outputBus: 0)
+            let connectionPoints = _engine.outputConnectionPoints(for: _distortion, outputBus: 0)
             for conn in connectionPoints {
                 // if the destination node represents the distortion effect, then this is the effect path
                 if conn.node === _engine.mainMixerNode {
                     // get the corresponding mixing destination object and set the mixer input bus volume
-                    if let mixingDestination = _sampler.destinationForMixer(conn.node!, bus: conn.bus) {
+                    if let mixingDestination = _sampler.destination(forMixer: conn.node!, bus: conn.bus) {
                         mixingDestination.volume = newValue
                     }
                     break
@@ -390,10 +390,10 @@ class AudioEngine: NSObject {
         
         get {
             var distortionVolume: Float = 0.0
-            let connectionPoint = _engine.outputConnectionPointsForNode(_distortion, outputBus: 0)
+            let connectionPoint = _engine.outputConnectionPoints(for: _distortion, outputBus: 0)
             for conn in connectionPoint  {
                 if (conn.node! === _engine.mainMixerNode) {
-                    if let mixingDestination = _sampler.destinationForMixer(conn.node!, bus: conn.bus) {
+                    if let mixingDestination = _sampler.destination(forMixer: conn.node!, bus: conn.bus) {
                         distortionVolume = mixingDestination.volume;
                     }
                     break
@@ -457,7 +457,7 @@ class AudioEngine: NSObject {
     //MARK: player Methods
     
     var playerIsPlaying: Bool {
-        return _player.playing
+        return _player.isPlaying
     }
     
     // 0.0 - 1.0
@@ -492,7 +492,7 @@ class AudioEngine: NSObject {
         }
     }
     
-    func toggleBuffer(recordBuffer: Bool) {
+    func toggleBuffer(_ recordBuffer: Bool) {
         _isRecordingSelected = recordBuffer
         
         if self.playerIsPlaying {
@@ -509,9 +509,9 @@ class AudioEngine: NSObject {
         //schedule the appropriate content
         if _isRecordingSelected {
             let recording = self.createAudioFileForPlayback()
-            _player.scheduleFile(recording, atTime: nil, completionHandler: nil)
+            _player.scheduleFile(recording, at: nil, completionHandler: nil)
         } else {
-            _player.scheduleBuffer(_playerLoopBuffer, atTime: nil, options: .Loops, completionHandler: nil)
+            _player.scheduleBuffer(_playerLoopBuffer, at: nil, options: .loops, completionHandler: nil)
         }
     }
     
@@ -549,24 +549,24 @@ class AudioEngine: NSObject {
         the engine is running. */
         
         if _mixerOutputFileURL == nil {
-            _mixerOutputFileURL = NSURL(string: NSTemporaryDirectory() + "mixerOutput.caf")
+            _mixerOutputFileURL = URL(string: NSTemporaryDirectory() + "mixerOutput.caf")
         }
         
         let mainMixer = _engine.mainMixerNode
         let mixerOutputFile: AVAudioFile
         do {
-            mixerOutputFile = try AVAudioFile(forWriting: _mixerOutputFileURL!, settings: mainMixer.outputFormatForBus(0).settings)
+            mixerOutputFile = try AVAudioFile(forWriting: _mixerOutputFileURL!, settings: mainMixer.outputFormat(forBus: 0).settings)
         } catch let error as NSError {
             fatalError("mixerOutputFile is nil, \(error.localizedDescription)")
         }
         
         self.startEngine()
-        mainMixer.installTapOnBus(0, bufferSize: 4096, format: mainMixer.outputFormatForBus(0)) {buffer, when in
+        mainMixer.installTap(onBus: 0, bufferSize: 4096, format: mainMixer.outputFormat(forBus: 0)) {buffer, when in
             
             // as AVAudioPCMBuffer's are delivered this will write sequentially. The buffer's frameLength signifies how much of the buffer is to be written
             // IMPORTANT: The buffer format MUST match the file's processing format which is why outputFormatForBus: was used when creating the AVAudioFile object above
             do {
-                try mixerOutputFile.writeFromBuffer(buffer)
+                try mixerOutputFile.write(from: buffer)
             } catch let error as NSError {
                 fatalError("error writing buffer data to file, \(error.localizedDescription)")
             } catch _ {
@@ -579,13 +579,13 @@ class AudioEngine: NSObject {
     func stopRecordingMixerOutput() {
         // stop recording really means remove the tap on the main mixer that was created in startRecordingMixerOutput
         if _isRecording {
-            _engine.mainMixerNode.removeTapOnBus(0)
+            _engine.mainMixerNode.removeTap(onBus: 0)
             _isRecording = false
             
             if self.recordingIsAvailable {
                 //Post a notificaiton that the record is complete
                 //Other nodes/objects can listen to this update accordingly
-                NSNotificationCenter.defaultCenter().postNotificationName(kRecordingCompletedNotification, object: nil)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: kRecordingCompletedNotification), object: nil)
             }
         }
     }
@@ -614,7 +614,7 @@ class AudioEngine: NSObject {
             NSLog("Error setting preferred sample rate! \(error.localizedDescription)\n")
         }
         
-        let ioBufferDuration: NSTimeInterval = 0.0029
+        let ioBufferDuration: TimeInterval = 0.0029
         do {
             try sessionInstance.setPreferredIOBufferDuration(ioBufferDuration)
         } catch let error as NSError {
@@ -622,20 +622,20 @@ class AudioEngine: NSObject {
         }
         
         // add interruption handler
-        NSNotificationCenter.defaultCenter().addObserver(self,
+        NotificationCenter.default.addObserver(self,
             selector: #selector(AudioEngine.handleInterruption(_:)),
-            name: AVAudioSessionInterruptionNotification,
+            name: NSNotification.Name.AVAudioSessionInterruption,
             object: sessionInstance)
         
         // we don't do anything special in the route change notification
-        NSNotificationCenter.defaultCenter().addObserver(self,
+        NotificationCenter.default.addObserver(self,
             selector: #selector(AudioEngine.handleRouteChange(_:)),
-            name: AVAudioSessionRouteChangeNotification,
+            name: NSNotification.Name.AVAudioSessionRouteChange,
             object: sessionInstance)
         
-        NSNotificationCenter.defaultCenter().addObserver(self,
+        NotificationCenter.default.addObserver(self,
             selector: #selector(AudioEngine.handleMediaServicesReset(_:)),
-            name: AVAudioSessionMediaServicesWereResetNotification,
+            name: NSNotification.Name.AVAudioSessionMediaServicesWereReset,
             object: sessionInstance)
         
         // activate the audio session
@@ -646,13 +646,13 @@ class AudioEngine: NSObject {
         }
     }
     
-    @objc func handleInterruption(notification: NSNotification) {
+    @objc func handleInterruption(_ notification: Notification) {
         let theInterruptionType = notification.userInfo![AVAudioSessionInterruptionTypeKey] as! UInt
         
-        NSLog("Session interrupted > --- %@ ---\n", theInterruptionType == AVAudioSessionInterruptionType.Began.rawValue ? "Begin Interruption" : "End Interruption")
+        NSLog("Session interrupted > --- %@ ---\n", theInterruptionType == AVAudioSessionInterruptionType.began.rawValue ? "Begin Interruption" : "End Interruption")
         NSLog("All userInfo: %@", notification.userInfo!)
         
-        if theInterruptionType == AVAudioSessionInterruptionType.Began.rawValue {
+        if theInterruptionType == AVAudioSessionInterruptionType.began.rawValue {
             _isSessionInterrupted = true
             _player.stop()
             _sequencer?.stop()
@@ -660,7 +660,7 @@ class AudioEngine: NSObject {
             
             self.delegate?.engineWasInterrupted?()
         }
-        if theInterruptionType == AVAudioSessionInterruptionType.Ended.rawValue {
+        if theInterruptionType == AVAudioSessionInterruptionType.ended.rawValue {
             // make sure to activate the session
             do {
                 try AVAudioSession.sharedInstance().setActive(true)
@@ -682,24 +682,24 @@ class AudioEngine: NSObject {
         }
     }
     
-    @objc func handleRouteChange(notification: NSNotification) {
+    @objc func handleRouteChange(_ notification: Notification) {
         let reasonValue = notification.userInfo![AVAudioSessionRouteChangeReasonKey] as! UInt
         let routeDescription = notification.userInfo![AVAudioSessionRouteChangePreviousRouteKey] as! AVAudioSessionRouteDescription
         
         NSLog("Route change:")
         switch reasonValue {
-        case AVAudioSessionRouteChangeReason.NewDeviceAvailable.rawValue:
+        case AVAudioSessionRouteChangeReason.newDeviceAvailable.rawValue:
             NSLog("     NewDeviceAvailable")
-        case AVAudioSessionRouteChangeReason.OldDeviceUnavailable.rawValue:
+        case AVAudioSessionRouteChangeReason.oldDeviceUnavailable.rawValue:
             NSLog("     OldDeviceUnavailable")
-        case AVAudioSessionRouteChangeReason.CategoryChange.rawValue:
+        case AVAudioSessionRouteChangeReason.categoryChange.rawValue:
             NSLog("     CategoryChange")
             NSLog("     New Category: New Category: \(AVAudioSession.sharedInstance().category)")
-        case AVAudioSessionRouteChangeReason.Override.rawValue:
+        case AVAudioSessionRouteChangeReason.override.rawValue:
             NSLog("     Override")
-        case AVAudioSessionRouteChangeReason.WakeFromSleep.rawValue:
+        case AVAudioSessionRouteChangeReason.wakeFromSleep.rawValue:
             NSLog("     WakeFromSleep")
-        case AVAudioSessionRouteChangeReason.NoSuitableRouteForCategory.rawValue:
+        case AVAudioSessionRouteChangeReason.noSuitableRouteForCategory.rawValue:
             NSLog("     NoSuitableRouteForCategory")
         default:
             NSLog("     ReasonUnknown")
@@ -709,7 +709,7 @@ class AudioEngine: NSObject {
         NSLog("%@", routeDescription)
     }
     
-    @objc func handleMediaServicesReset(notification: NSNotification) {
+    @objc func handleMediaServicesReset(_ notification: Notification) {
         // if we've received this notification, the media server has been reset
         // re-wire all the connections and start the engine
         NSLog("Media services have been reset!")

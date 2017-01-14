@@ -36,7 +36,7 @@ class AudioViewController: UIViewController {
         
         
         
-        if UIDevice.currentDevice().userInterfaceIdiom == .Pad {
+        if UIDevice.current.userInterfaceIdiom == .pad {
             self.stackView.addArrangedSubview(self.parameterView)
         } else {
             let titleViewTap = UITapGestureRecognizer(target: self, action: #selector(AudioViewController.showParameterView(_:)))
@@ -52,22 +52,22 @@ class AudioViewController: UIViewController {
     }
     
     // style play/stop button
-    func styleButton(button: UIButton, isPlaying: Bool) {
+    func styleButton(_ button: UIButton, isPlaying: Bool) {
         if isPlaying {
-            button.setTitle("Stop", forState: .Normal)
+            button.setTitle("Stop", for: UIControlState())
         } else {
-            button.setTitle("Play", forState: .Normal)
+            button.setTitle("Play", for: UIControlState())
         }
     }
     
     //present parameter view
-    @objc func showParameterView(recognizer: UITapGestureRecognizer) {
+    @objc func showParameterView(_ recognizer: UITapGestureRecognizer) {
         
-        if UIDevice.currentDevice().userInterfaceIdiom != .Pad {
+        if UIDevice.current.userInterfaceIdiom != .pad {
             let controller = UIViewController()
             controller.view = self.parameterView
             self.parameterView?.presentedController = controller
-            self.presentViewController(controller, animated: true, completion: nil)
+            self.present(controller, animated: true, completion: nil)
         }
     }
     

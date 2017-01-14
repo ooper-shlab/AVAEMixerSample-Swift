@@ -31,15 +31,15 @@ class CAAVParameterView: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         let swipe = UISwipeGestureRecognizer(target: self, action: #selector(CAAVParameterView.swipeRecognizer(_:)))
-        swipe.direction = UISwipeGestureRecognizerDirection.Down
+        swipe.direction = UISwipeGestureRecognizerDirection.down
         self.addGestureRecognizer(swipe)
         
     }
     
     //swipe down to dismiss the controller
-    @objc func swipeRecognizer(sender: UISwipeGestureRecognizer) {
+    @objc func swipeRecognizer(_ sender: UISwipeGestureRecognizer) {
         if self.presentedController != nil {
-            self.presentedController?.dismissViewControllerAnimated(true, completion: nil)
+            self.presentedController?.dismiss(animated: true, completion: nil)
             self.presentedController = nil
         }
     }

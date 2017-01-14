@@ -37,7 +37,7 @@ class ReverbViewController: AudioViewController {
         self.reverbWetDrySlider.value = self.audioEngine?.reverbWetDryMix ?? 0.0
     }
     
-    @IBAction func setWetDryMix(sender: UISlider) {
+    @IBAction func setWetDryMix(_ sender: UISlider) {
         self.audioEngine?.reverbWetDryMix = sender.value
     }
     
