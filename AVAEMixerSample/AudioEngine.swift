@@ -6,7 +6,7 @@
 //
 //
 /*
- Copyright (C) 2015 Apple Inc. All Rights Reserved.
+ Copyright (C) 2017 Apple Inc. All Rights Reserved.
  See LICENSE.txt for this sample’s licensing information
 
  Abstract:
@@ -254,14 +254,17 @@ class AudioEngine: NSObject {
         match that of the source node's output bus. */
         
         let stereoFormat = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 2)
+        let playerFormat = _playerLoopBuffer.format
         
         // establish a connection between nodes
         
         // connect the player to the reverb
-        _engine.connect(_player, to: _reverb, format: stereoFormat)
+        // use the buffer format for the connection format as they must match
+        _engine.connect(_player, to: _reverb, format: playerFormat)
         
         // connect the reverb effect to mixer input bus 0
-        _engine.connect(_reverb, to: mainMixer, fromBus: 0, toBus: 0, format: stereoFormat)
+        // use the buffer format for the connection format as they must match
+        _engine.connect(_reverb, to: mainMixer, fromBus: 0, toBus: 0, format: playerFormat)
         
         // connect the distortion effect to mixer input bus 2
         _engine.connect(_distortion, to: mainMixer, fromBus: 0, toBus: 2, format: stereoFormat)

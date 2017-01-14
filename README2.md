@@ -3,8 +3,8 @@
 Translated by OOPer in cooperation with shlab.jp, on 2016/1/30.
 
 Based on
-<https://developer.apple.com/library/ios/samplecode/AVAEMixerSample/Introduction/Intro.html#//apple_ref/doc/uid/TP40015134>
-2016-01-08.
+<https://developer.apple.com/library/content/samplecode/AVAEMixerSample/Introduction/Intro.html#//apple_ref/doc/uid/TP40015134>
+2017-01-12.
 
 As this is a line-by-line translation from the original sample code, "redistribute the Apple Software in its entirety and without modifications" would apply. See LICENSE.txt .
 Some faults caused by my translation may exist. Not all features tested.
@@ -14,4 +14,4 @@ REQUIREMENTS
 ------------
 
 ### BUILD ###
-iOS 9.2 SDK, Xcode 7.2
+iOS 10 SDK, Xcode 8.2.1

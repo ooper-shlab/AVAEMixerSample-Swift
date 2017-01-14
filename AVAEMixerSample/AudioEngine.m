@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2015 Apple Inc. All Rights Reserved.
+ Copyright (C) 2017 Apple Inc. All Rights Reserved.
  See LICENSE.txt for this sample’s licensing information
  
  Abstract:
@@ -238,20 +238,26 @@
      match that of the source node's output bus. */
     
     AVAudioFormat *stereoFormat = [[AVAudioFormat alloc] initStandardFormatWithSampleRate:44100 channels:2];
+    AVAudioFormat *playerFormat = _playerLoopBuffer.format;
     
     // establish a connection between nodes
     
     // connect the player to the reverb
-    [_engine connect:_player to:_reverb format:stereoFormat];
+    // use the buffer format for the connection format as they must match
+    [_engine connect:_player to:_reverb format:playerFormat];
     
     // connect the reverb effect to mixer input bus 0
-    [_engine connect:_reverb to:mainMixer fromBus:0 toBus:0 format:stereoFormat];
+    // use the buffer format for the connection format as they must match
+    [_engine connect:_reverb to:mainMixer fromBus:0 toBus:0 format:playerFormat];
     
     // connect the distortion effect to mixer input bus 2
     [_engine connect:_distortion to:mainMixer fromBus:0 toBus:2 format:stereoFormat];
     
     // fan out the sampler to mixer input 1 and distortion effect
-    NSArray<AVAudioConnectionPoint *> *destinationNodes = [NSArray arrayWithObjects:[[AVAudioConnectionPoint alloc] initWithNode:_engine.mainMixerNode bus:1], [[AVAudioConnectionPoint alloc] initWithNode:_distortion bus:0], nil];
+    NSArray<AVAudioConnectionPoint *> *destinationNodes = [NSArray arrayWithObjects:[[AVAudioConnectionPoint alloc] initWithNode:_engine.mainMixerNode bus:1],
+                                                                                    [[AVAudioConnectionPoint alloc] initWithNode:_distortion bus:0],
+                                                                                      nil];
+    
     [_engine connect:_sampler toConnectionPoints:destinationNodes fromBus:0 format:stereoFormat];
 }
 

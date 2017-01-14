@@ -10,11 +10,11 @@ For more information refer to AVAudioEngine in Practice WWDC 2014: https://devel
 
 ### Build
 
-iOS 9 SDK, Xcode Version 7.1 or greater
+iOS 10 SDK, Xcode Version 8 or greater
 
 ### Runtime
 
-iOS 9.x
+iOS 10.x
 
 ## Version History
 1.0 First public version
@@ -31,4 +31,7 @@ iOS 9.x
 * (new) Added support for iPhone, iPad using Size Classes
 * (modified) Useage of a single AVAudioPlayerNode that toggles between a recorded AVAudioFile and a AVAudioPCMBuffer
 
-Copyright (C) 2015-2016 Apple Inc. All rights reserved.
+2.1 Minor update:
+* (modified) Explicitly use the buffer format as the connection format for the player to reverb & reverb to mainMixer, to make it clear that these formats must match. 
+
+Copyright (C) 2015-2017 Apple Inc. All rights reserved.

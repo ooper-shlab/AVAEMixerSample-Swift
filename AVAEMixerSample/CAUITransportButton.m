@@ -5,7 +5,7 @@
  */
 
 /*
- Copyright (C) 2015 Apple Inc. All Rights Reserved.
+ Copyright (C) 2017 Apple Inc. All Rights Reserved.
  See LICENSE.txt for this sample’s licensing information
  
  Abstract:
@@ -156,7 +156,7 @@ double toRadians(double degrees) {
 	CABasicAnimation *strokeAnim = [CABasicAnimation animationWithKeyPath:@"fillColor"];
     strokeAnim.fromValue         = (id) ((CAShapeLayer *)self.layer).fillColor;
     strokeAnim.toValue           = (id) color.CGColor;
-    strokeAnim.duration          = 2.0;
+    strokeAnim.duration          = 1.0;
     strokeAnim.repeatCount       = 0;
     strokeAnim.autoreverses      = YES;
 	[CATransaction setCompletionBlock: ^{
