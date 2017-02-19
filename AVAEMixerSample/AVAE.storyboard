@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1212" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="x7A-WA-Jdk">
-    <device id="ipad12_9" orientation="portrait">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1217" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="x7A-WA-Jdk">
+    <device id="ipad9_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -20,14 +21,14 @@
                         <viewControllerLayoutGuide type="bottom" id="eDY-Nt-EnI"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="ch4-E3-LaE" customClass="CAAVAudioUnitView">
-                        <rect key="frame" x="0.0" y="0.0" width="599" height="299.5"/>
+                        <rect key="frame" x="0.0" y="0.0" width="427.5" height="222.5"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" placeholderIntrinsicWidth="290" placeholderIntrinsicHeight="40" translatesAutoresizingMaskIntoConstraints="NO" id="dDo-E7-jRc">
-                                <rect key="frame" x="0.0" y="0.0" width="599" height="40"/>
+                                <rect key="frame" x="0.0" y="0.0" width="427.5" height="40"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sequencer" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3pK-SN-2Zh">
-                                        <rect key="frame" x="245" y="7" width="110" height="26"/>
+                                        <rect key="frame" x="159.5" y="7" width="110" height="26"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -50,7 +51,7 @@
                                 </variation>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="hZ6-B4-VeR">
-                                <rect key="frame" x="20" y="40" width="559" height="260"/>
+                                <rect key="frame" x="20" y="40" width="387.5" height="182.5"/>
                                 <constraints>
                                     <constraint firstAttribute="height" id="UoZ-RD-Qd4"/>
                                 </constraints>
@@ -79,6 +80,7 @@
                         <outlet property="sequencerPlaybackRateSlider" destination="YJn-RD-5q7" id="FDr-8w-Q9f"/>
                         <outlet property="sequencerPositionSlider" destination="NKV-rf-3IH" id="6hx-Zk-hEJ"/>
                         <outlet property="stackView" destination="hZ6-B4-VeR" id="uh9-yM-Feu"/>
+                        <outlet property="titleLabel" destination="3pK-SN-2Zh" id="uYD-uu-8Bg"/>
                         <outlet property="titleView" destination="dDo-E7-jRc" id="Jj0-Qd-uZT"/>
                     </connections>
                 </viewController>
@@ -191,11 +193,11 @@
                         <viewControllerLayoutGuide type="bottom" id="1NU-IJ-BJH"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="bmu-eC-vyD" customClass="CAAVAudioUnitView">
-                        <rect key="frame" x="0.0" y="0.0" width="599" height="224.5"/>
+                        <rect key="frame" x="0.0" y="0.0" width="427.5" height="167"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="y46-bl-Fox">
-                                <rect key="frame" x="20" y="40" width="559" height="185"/>
+                                <rect key="frame" x="20" y="40" width="387.5" height="127"/>
                                 <constraints>
                                     <constraint firstAttribute="height" id="PZ9-la-tmG"/>
                                 </constraints>
@@ -206,15 +208,16 @@
                                 </variation>
                             </stackView>
                             <view contentMode="scaleToFill" placeholderIntrinsicWidth="290" placeholderIntrinsicHeight="40" translatesAutoresizingMaskIntoConstraints="NO" id="ex3-4f-Gjx">
-                                <rect key="frame" x="0.0" y="0.0" width="599" height="40"/>
+                                <rect key="frame" x="0.0" y="0.0" width="427.5" height="40"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Instrument Unit" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SmP-Yd-fXq">
-                                        <rect key="frame" x="221" y="7" width="157" height="26"/>
+                                        <rect key="frame" x="135.5" y="7" width="157" height="26"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
                                 <color key="backgroundColor" red="0.40000000600000002" green="0.80000001190000003" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="tintColor" red="0.40000000600000002" green="0.80000001190000003" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstItem="SmP-Yd-fXq" firstAttribute="centerX" secondItem="ex3-4f-Gjx" secondAttribute="centerX" id="HeO-33-VxK"/>
                                     <constraint firstItem="SmP-Yd-fXq" firstAttribute="centerY" secondItem="ex3-4f-Gjx" secondAttribute="centerY" id="O9w-db-QXC"/>
@@ -249,6 +252,7 @@
                         <outlet property="effectVolumeSlider" destination="6fg-VE-QYW" id="HSX-wB-Cdw"/>
                         <outlet property="parameterView" destination="lyk-70-C4s" id="RA8-1N-WRU"/>
                         <outlet property="stackView" destination="y46-bl-Fox" id="TKX-O2-m03"/>
+                        <outlet property="titleLabel" destination="SmP-Yd-fXq" id="R8Q-z7-K3v"/>
                         <outlet property="titleView" destination="ex3-4f-Gjx" id="7dY-Fg-E99"/>
                     </connections>
                 </viewController>
@@ -341,14 +345,14 @@
                         <viewControllerLayoutGuide type="bottom" id="2OW-k4-CUX"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="1l1-SW-JgC" customClass="CAAVAudioUnitView">
-                        <rect key="frame" x="0.0" y="0.0" width="944" height="451.5"/>
+                        <rect key="frame" x="0.0" y="0.0" width="688" height="309.5"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z57-JV-B8x">
-                                <rect key="frame" x="0.0" y="0.0" width="944" height="40"/>
+                                <rect key="frame" x="0.0" y="0.0" width="688" height="40"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Main Mixer Node" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X7H-Wu-YJs">
-                                        <rect key="frame" x="388" y="7" width="168" height="26"/>
+                                        <rect key="frame" x="260" y="7.5" width="168" height="26"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -372,7 +376,7 @@
                                 </variation>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="tgA-Mm-kNO">
-                                <rect key="frame" x="20" y="40" width="904" height="412"/>
+                                <rect key="frame" x="20" y="40" width="648" height="269.5"/>
                                 <constraints>
                                     <constraint firstAttribute="height" id="1Hl-qL-lpC"/>
                                 </constraints>
@@ -399,6 +403,7 @@
                         <outlet property="parameterView" destination="ClC-wF-BdY" id="dCT-J6-1Nc"/>
                         <outlet property="recordButton" destination="PIn-h9-pPL" id="1tx-ia-G4c"/>
                         <outlet property="stackView" destination="tgA-Mm-kNO" id="hpX-M3-rmj"/>
+                        <outlet property="titleLabel" destination="X7H-Wu-YJs" id="7ts-Jh-Spb"/>
                         <outlet property="titleView" destination="Z57-JV-B8x" id="Hic-4T-arz"/>
                     </connections>
                 </viewController>
@@ -512,14 +517,14 @@
                         <viewControllerLayoutGuide type="bottom" id="ntz-WH-bQp"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="1DE-Ib-mZu" customClass="CAAVAudioUnitView">
-                        <rect key="frame" x="0.0" y="0.0" width="325" height="254.5"/>
+                        <rect key="frame" x="0.0" y="0.0" width="240.5" height="189"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kDf-68-nNr">
-                                <rect key="frame" x="-4" y="0.0" width="333" height="40"/>
+                                <rect key="frame" x="-4" y="0.0" width="248.5" height="40"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Reverb Unit" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Iw-8z-Xnb">
-                                        <rect key="frame" x="108" y="7" width="118" height="26"/>
+                                        <rect key="frame" x="65.5" y="7" width="117.5" height="26"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -543,7 +548,7 @@
                                 </variation>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="NiV-DU-nsy">
-                                <rect key="frame" x="16" y="40" width="293" height="215"/>
+                                <rect key="frame" x="16" y="40" width="208.5" height="149"/>
                                 <constraints>
                                     <constraint firstAttribute="height" id="Ss7-MY-nn3"/>
                                 </constraints>
@@ -585,6 +590,7 @@
                         <outlet property="parameterView" destination="DH5-lR-7o7" id="0kQ-nI-7dG"/>
                         <outlet property="reverbWetDrySlider" destination="nGp-p7-Rca" id="v7H-bg-Fbt"/>
                         <outlet property="stackView" destination="NiV-DU-nsy" id="iav-fg-kCp"/>
+                        <outlet property="titleLabel" destination="7Iw-8z-Xnb" id="2KO-rb-0oQ"/>
                         <outlet property="titleView" destination="kDf-68-nNr" id="gy0-RH-wBD"/>
                     </connections>
                 </viewController>
@@ -632,11 +638,11 @@
                         <viewControllerLayoutGuide type="bottom" id="3hq-E3-cQe"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="iWy-qV-5ul" customClass="CAAVAudioUnitView">
-                        <rect key="frame" x="0.0" y="0.0" width="325" height="544"/>
+                        <rect key="frame" x="0.0" y="0.0" width="240.5" height="409.5"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="02x-hM-MVb">
-                                <rect key="frame" x="16" y="40" width="293" height="504"/>
+                                <rect key="frame" x="16" y="40" width="208.5" height="369.5"/>
                                 <constraints>
                                     <constraint firstAttribute="height" id="kP5-VO-r3P"/>
                                 </constraints>
@@ -647,10 +653,10 @@
                                 </variation>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uWS-Vm-V1z">
-                                <rect key="frame" x="-4" y="0.0" width="333" height="40"/>
+                                <rect key="frame" x="-4" y="0.0" width="248.5" height="40"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Player Node" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fl3-X7-bOk">
-                                        <rect key="frame" x="105" y="7" width="122" height="26"/>
+                                        <rect key="frame" x="63.5" y="7" width="121.5" height="26"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -693,6 +699,7 @@
                         <outlet property="playerSegmentControl" destination="v1s-zV-brw" id="cG1-7i-rHT"/>
                         <outlet property="playerVolumeSlider" destination="fks-1W-GAl" id="UEB-1o-Jrl"/>
                         <outlet property="stackView" destination="02x-hM-MVb" id="bWw-Ba-eNX"/>
+                        <outlet property="titleLabel" destination="Fl3-X7-bOk" id="wpZ-Rk-gz7"/>
                         <outlet property="titleView" destination="uWS-Vm-V1z" id="XQo-cI-hKn"/>
                     </connections>
                 </viewController>
@@ -805,73 +812,73 @@
                         <viewControllerLayoutGuide type="bottom" id="y3r-qv-JD9"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="a41-p5-oTC">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Al9-US-Rfk">
-                                <rect key="frame" x="20" y="28" width="984" height="1330"/>
+                                <rect key="frame" x="20" y="28" width="728" height="988"/>
                                 <subviews>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LWr-Av-L65">
-                                        <rect key="frame" x="20" y="858.5" width="944" height="451.5"/>
+                                        <rect key="frame" x="20" y="658.5" width="688" height="309.5"/>
                                         <connections>
                                             <segue destination="qdj-71-B5o" kind="embed" id="baf-L9-NUD"/>
                                         </connections>
                                     </containerView>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lC8-3n-GX7">
-                                        <rect key="frame" x="639" y="584" width="325" height="254.5"/>
+                                        <rect key="frame" x="467.5" y="449.5" width="240.5" height="189"/>
                                         <connections>
                                             <segue destination="35Y-N8-SFA" kind="embed" id="y3y-u8-Zc5"/>
                                         </connections>
                                     </containerView>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ygu-cb-aAf">
-                                        <rect key="frame" x="20" y="584" width="325" height="254.5"/>
+                                        <rect key="frame" x="20" y="449.5" width="240.5" height="189"/>
                                         <connections>
                                             <segue destination="rcj-cY-ctW" kind="embed" id="gY4-Ti-JkC"/>
                                         </connections>
                                     </containerView>
                                     <containerView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="1000" verticalHuggingPriority="1000" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="1zf-N7-OcY">
-                                        <rect key="frame" x="20" y="20" width="325" height="544"/>
+                                        <rect key="frame" x="20" y="20" width="240.5" height="409.5"/>
                                         <connections>
                                             <segue destination="1rc-aL-nnE" kind="embed" id="wL4-Fh-HHb"/>
                                         </connections>
                                     </containerView>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tzy-Kk-Cbs">
-                                        <rect key="frame" x="365" y="20" width="599" height="299.5"/>
+                                        <rect key="frame" x="280.5" y="20" width="427.5" height="222.5"/>
                                         <connections>
                                             <segue destination="Uce-8Y-5Hi" kind="embed" id="EeL-n0-ULg"/>
                                         </connections>
                                     </containerView>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VSs-tl-TVD">
-                                        <rect key="frame" x="365" y="339.5" width="599" height="224.5"/>
+                                        <rect key="frame" x="280.5" y="262.5" width="427.5" height="167"/>
                                         <connections>
                                             <segue destination="8Oo-Ps-YVm" kind="embed" id="2b7-Dn-f9E"/>
                                         </connections>
                                     </containerView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="deW-pT-n8D">
-                                        <rect key="frame" x="660" y="319.5" width="10" height="20"/>
+                                        <rect key="frame" x="490" y="242.5" width="10" height="20"/>
                                         <color key="backgroundColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="10" id="unE-WF-meJ"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OxR-9k-OYJ">
-                                        <rect key="frame" x="178" y="564" width="10" height="20"/>
+                                        <rect key="frame" x="136" y="429.5" width="10" height="20"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9gd-Pi-K5g">
-                                        <rect key="frame" x="796" y="564" width="10" height="20"/>
+                                        <rect key="frame" x="582" y="429.5" width="10" height="20"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hYh-3w-Le8">
-                                        <rect key="frame" x="487" y="564" width="10" height="294.5"/>
+                                        <rect key="frame" x="359" y="429.5" width="10" height="229"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="N3Z-9m-UAA">
-                                        <rect key="frame" x="178" y="838.5" width="10" height="20"/>
+                                        <rect key="frame" x="136" y="638.5" width="10" height="20"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hG5-ZD-lId">
-                                        <rect key="frame" x="797" y="838.5" width="10" height="20"/>
+                                        <rect key="frame" x="583" y="638.5" width="10" height="20"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </view>
                                 </subviews>
@@ -975,14 +982,14 @@
                         <viewControllerLayoutGuide type="bottom" id="TXU-Il-6KA"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="LgG-RR-ZVP" customClass="CAAVAudioUnitView">
-                        <rect key="frame" x="0.0" y="0.0" width="325" height="254.5"/>
+                        <rect key="frame" x="0.0" y="0.0" width="240.5" height="189"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="diI-Da-z4Y">
-                                <rect key="frame" x="-4" y="0.0" width="333" height="40"/>
+                                <rect key="frame" x="-4" y="0.0" width="248.5" height="40"/>
                                 <subviews>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Distortion Unit" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="axE-EG-Gkk">
-                                        <rect key="frame" x="93" y="7" width="146" height="26"/>
+                                        <rect key="frame" x="51" y="7" width="146" height="26"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -1006,7 +1013,7 @@
                                 </variation>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="adz-e2-QX5">
-                                <rect key="frame" x="16" y="40" width="293" height="215"/>
+                                <rect key="frame" x="16" y="40" width="208.5" height="149"/>
                                 <constraints>
                                     <constraint firstAttribute="height" id="Nom-2Q-tBj"/>
                                 </constraints>
@@ -1048,6 +1055,7 @@
                         <outlet property="distortionWetDrySlider" destination="XJS-9P-i26" id="jAu-iM-4i4"/>
                         <outlet property="parameterView" destination="IWe-Eo-JCF" id="0Uw-2P-psS"/>
                         <outlet property="stackView" destination="adz-e2-QX5" id="VKe-In-F6C"/>
+                        <outlet property="titleLabel" destination="axE-EG-Gkk" id="PaF-zL-xkN"/>
                         <outlet property="titleView" destination="diI-Da-z4Y" id="nM7-2l-hGl"/>
                     </connections>
                 </viewController>

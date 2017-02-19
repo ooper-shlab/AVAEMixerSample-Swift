@@ -18,24 +18,4 @@
 }
 */
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (self) {
-        UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeRecognizer:)];
-        swipe.direction = UISwipeGestureRecognizerDirectionDown;
-        [self addGestureRecognizer:swipe];
-    }
-    
-    return self;
-}
-
-//swipe down to dismiss the controller
-- (void)swipeRecognizer:(UISwipeGestureRecognizer *)sender {
-    if (self.presentedController) {
-        [self.presentedController dismissViewControllerAnimated:YES completion:nil];
-        self.presentedController = nil;
-    }
-}
-
 @end

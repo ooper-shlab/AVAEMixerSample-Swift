@@ -8,33 +8,37 @@
 /*
  Copyright (C) 2017 Apple Inc. All Rights Reserved.
  See LICENSE.txt for this sample’s licensing information
-
+ 
  Abstract:
  AudioEngine is the main controller class that creates the following objects:
-                 AVAudioEngine               *_engine;
-                 AVAudioUnitSampler          *_sampler;
-                 AVAudioUnitDistortion       *_distortion;
-                 AVAudioUnitReverb           *_reverb;
-                 AVAudioPlayerNode           *_player;
-
-                 AVAudioSequencer            *_sequencer;
-                 AVAudioPCMBuffer            *_playerLoopBuffer;
-
-             It connects all the nodes, loads the buffers as well as controls the AVAudioEngine object itself.
+ AVAudioEngine               *_engine;
+ AVAudioUnitSampler          *_sampler;
+ AVAudioUnitDistortion       *_distortion;
+ AVAudioUnitReverb           *_reverb;
+ AVAudioPlayerNode           *_player;
+ 
+ AVAudioSequencer            *_sequencer;
+ AVAudioPCMBuffer            *_playerLoopBuffer;
+ 
+ It connects all the nodes, loads the buffers as well as controls the AVAudioEngine object itself.
  */
 
 import Foundation
 import AVFoundation
 import Accelerate
 
-//Other nodes/objects can listen to this to determine when the user finishes a recording
-let kRecordingCompletedNotification = "RecordingCompletedNotification";
+// Other nodes/objects can listen to this to determine when the user finishes a recording
+extension Notification.Name {
+    static let RecordingCompleted = Notification.Name("RecordingCompletedNotification")
+    
+    static let ShouldEnginePause = Notification.Name("kShouldEnginePauseNotification")
+}
 
 @objc(AudioEngineDelegate)
 protocol AudioEngineDelegate: NSObjectProtocol {
-    
     @objc optional func engineWasInterrupted()
     @objc optional func engineConfigurationHasChanged()
+    @objc optional func engineHasBeenPaused()
     @objc optional func mixerOutputFilePlayerHasStopped()
     
 }
@@ -77,53 +81,15 @@ class AudioEngine: NSObject {
     override init() {
         super.init()
         
-        // AVAudioSession setup
-        self.initAVAudioSession()
-        
+        _mixerOutputFileURL = nil
         _isSessionInterrupted = false
         _isConfigChangePending = false
         
-        // create the various nodes
+        // AVAudioSession setup
+        self.initAVAudioSession()
         
-        /*  AVAudioPlayerNode supports scheduling the playback of AVAudioBuffer instances,
-        or segments of audio files opened via AVAudioFile. Buffers and segments may be
-        scheduled at specific points in time, or to play immediately following preceding segments. */
-        
-        _player = AVAudioPlayerNode()
-        
-        /* The AVAudioUnitSampler class encapsulates Apple's Sampler Audio Unit. The sampler audio unit can be configured by loading different types of instruments such as an “.aupreset” file, a DLS or SF2 sound bank, an EXS24 instrument, a single audio file or with an array of audio files. The output is a single stereo bus. */
-        
-        let bankURL = URL(fileURLWithPath: Bundle(for: type(of: self)).path(forResource: "gs_instruments", ofType: "dls")!)
-        _sampler = AVAudioUnitSampler()
-        do {
-            try _sampler.loadSoundBankInstrument(at: bankURL, program: 0, bankMSB: 0x79, bankLSB: 0)
-        } catch _ {}
-        
-        /* An AVAudioUnitEffect that implements a multi-stage distortion effect */
-        
-        _distortion = AVAudioUnitDistortion()
-        
-        /*  A reverb simulates the acoustic characteristics of a particular environment.
-        Use the different presets to simulate a particular space and blend it in with
-        the original signal using the wetDryMix parameter. */
-        
-        _reverb = AVAudioUnitReverb()
-        
-        // load drumloop into a buffer for the playernode
-        let drumLoopURL = URL(fileURLWithPath: Bundle.main.path(forResource: "drumLoop", ofType: "caf")!)
-        let drumLoopFile = try! AVAudioFile(forReading: drumLoopURL)
-        _playerLoopBuffer = AVAudioPCMBuffer(pcmFormat: drumLoopFile.processingFormat, frameCapacity: AVAudioFrameCount(drumLoopFile.length))
-        do {
-            //        success = [drumLoopFile readIntoBuffer:_playerLoopBuffer error:&error];
-            try drumLoopFile.read(into: _playerLoopBuffer)
-        } catch let error as NSError {
-            //        NSAssert(success, @"couldn't read drumLoopFile into buffer, %@", [error localizedDescription]);
-            fatalError("couldn't read drumLoopFile into buffer, \(error.localizedDescription)")
-        }
-        
-        _mixerOutputFileURL = nil
-        _isRecording = false
-        _isRecordingSelected = false
+        // create and initalize nodes
+        self.initAndCreateNodes()
         
         // create engine and attach nodes
         self.createEngineAndAttachNodes()
@@ -131,30 +97,46 @@ class AudioEngine: NSObject {
         // make engine connections
         self.makeEngineConnections()
         
-        //create the audio sequencer
+        // create the audio sequencer
         self.createAndSetupSequencer()
         
-        // settings for effects units
-        _reverb.wetDryMix = 100;
-        _reverb.loadFactoryPreset(AVAudioUnitReverbPreset.mediumHall)
+        // set initial default values
+        self.setNodeDefaults()
         
-        _distortion.loadFactoryPreset(AVAudioUnitDistortionPreset.drumsBitBrush)
-        _distortion.wetDryMix = 100;
-        self.samplerEffectVolume = 0.0;
+        NSLog("%@", _engine.description)
+        
+        NotificationCenter.default.addObserver(forName: .ShouldEnginePause, object: nil, queue: OperationQueue.main) {note in
+            
+            /* pausing stops the audio engine and the audio hardware, but does not deallocate the resources allocated by prepare().
+             When your app does not need to play audio, you should pause or stop the engine (as applicable), to minimize power consumption.
+             */
+            if !self._isSessionInterrupted && !self._isConfigChangePending {
+                if self.playerIsPlaying || self.sequencerIsPlaying || self._isRecording { return;
+                }
+                
+                NSLog("Pausing Engine")
+                self._engine.pause()
+                self._engine.reset()
+                
+                // post notification
+                self.delegate?.engineHasBeenPaused?()
+            }
+        }
         
         // sign up for notifications from the engine if there's a hardware config change
-        NotificationCenter.default.addObserver(forName: NSNotification.Name.AVAudioEngineConfigurationChange, object: nil, queue: OperationQueue.main) {note in
+        NotificationCenter.default.addObserver(forName: .AVAudioEngineConfigurationChange, object: nil, queue: OperationQueue.main) {note in
             
             // if we've received this notification, something has changed and the engine has been stopped
-            // re-wire all the connections and start the engine
+            // re-wire all the connections and reset any state that may have been lost due to nodes being
+            // uninitialized when the engine was stopped
             
             self._isConfigChangePending = true
             
             if !self._isSessionInterrupted {
-                NSLog("Received a \(NSNotification.Name.AVAudioEngineConfigurationChange) notification!")
-                NSLog("Re-wiring connections and starting once again")
+                NSLog("Received a \(NSNotification.Name.AVAudioEngineConfigurationChange) notification!");
+                NSLog("Re-wiring connections");
                 self.makeEngineConnections()
-                self.startEngine()
+                self.setNodeDefaults()
             } else {
                 NSLog("Session is interrupted, deferring changes")
             }
@@ -162,64 +144,75 @@ class AudioEngine: NSObject {
             // post notification
             self.delegate?.engineConfigurationHasChanged?()
         }
-        
-        // start the engine
-        self.startEngine()
-    }
-    
-    //MARK: AVAudioSequencer Setup
-    
-    private func createAndSetupSequencer() {
-        /* A collection of MIDI events organized into AVMusicTracks, plus a player to play back the events.
-        NOTE: The sequencer must be created after the engine is initialized and an instrument node is attached and connected
-        */
-        _sequencer = AVAudioSequencer(audioEngine: _engine)
-        
-        // load sequencer loop
-        guard let midiFileURL = Bundle(for: type(of: self)).url(forResource: "bluesyRiff", withExtension: "mid") else {
-            fatalError("couldn't find midi file")
-        }
-        do {
-            try _sequencer!.load(from: midiFileURL, options: AVMusicSequenceLoadOptions())
-        } catch let error as NSError {
-            fatalError("couldn't load midi file, \(error.localizedDescription)")
-        }
-        
-        // enable looping on all the sequencer tracks
-        _sequencerTrackLengthSeconds = 0;
-        _sequencer!.tracks.forEach{track in
-            track.isLoopingEnabled = true;
-            track.numberOfLoops = AVMusicTrackLoopCount.forever.rawValue
-            let trackLengthInSeconds = track.lengthInSeconds
-            if _sequencerTrackLengthSeconds < trackLengthInSeconds {
-                _sequencerTrackLengthSeconds = trackLengthInSeconds
-            }
-        }
-        
-        _sequencer!.prepareToPlay()
-        
     }
     
     //MARK: AVAudioEngine Setup
     
+    private func initAndCreateNodes() {
+        
+        _engine = nil
+        _sampler = nil
+        _distortion = nil
+        _reverb = nil
+        _player = nil
+        
+        // create the various nodes
+        
+        /*  AVAudioPlayerNode supports scheduling the playback of AVAudioBuffer instances,
+         or segments of audio files opened via AVAudioFile. Buffers and segments may be
+         scheduled at specific points in time, or to play immediately following preceding segments. */
+        
+        _player = AVAudioPlayerNode()
+        
+        /* The AVAudioUnitSampler class encapsulates Apple's Sampler Audio Unit.
+         The sampler audio unit can be configured by loading different types of instruments such as an “.aupreset” file,
+         a DLS or SF2 sound bank, an EXS24 instrument, a single audio file or with an array of audio files.
+         The output is a single stereo bus. */
+        
+        _sampler = AVAudioUnitSampler()
+        
+        /* An AVAudioUnitEffect that implements a multi-stage distortion effect */
+        
+        _distortion = AVAudioUnitDistortion()
+        
+        /*  A reverb simulates the acoustic characteristics of a particular environment.
+         Use the different presets to simulate a particular space and blend it in with
+         the original signal using the wetDryMix parameter. */
+        
+        _reverb = AVAudioUnitReverb()
+        
+        // load drumloop into a buffer for the playernode
+        do {
+            let drumLoopURL = Bundle.main.url(forResource: "drumLoop", withExtension: "caf")!
+            let drumLoopFile = try AVAudioFile(forReading: drumLoopURL)
+            _playerLoopBuffer = AVAudioPCMBuffer(pcmFormat: drumLoopFile.processingFormat, frameCapacity: AVAudioFrameCount(drumLoopFile.length))
+            try drumLoopFile.read(into: _playerLoopBuffer)
+        } catch {
+            fatalError("couldn't read drumLoopFile into buffer, \(error.localizedDescription)")
+        }
+        
+        _isRecording = false
+        _isRecordingSelected = false
+    }
+    
     private func createEngineAndAttachNodes() {
         /*  An AVAudioEngine contains a group of connected AVAudioNodes ("nodes"), each of which performs
-        an audio signal generation, processing, or input/output task.
-        
-        Nodes are created separately and attached to the engine.
-        
-        The engine supports dynamic connection, disconnection and removal of nodes while running,
-        with only minor limitations:
-        - all dynamic reconnections must occur upstream of a mixer
-        - while removals of effects will normally result in the automatic connection of the adjacent
-        nodes, removal of a node which has differing input vs. output channel counts, or which
-        is a mixer, is likely to result in a broken graph. */
+         an audio signal generation, processing, or input/output task.
+         
+         Nodes are created separately and attached to the engine.
+         
+         The engine supports dynamic connection, disconnection and removal of nodes while running,
+         with only minor limitations:
+         - all dynamic reconnections must occur upstream of a mixer
+         - while removals of effects will normally result in the automatic connection of the adjacent
+         nodes, removal of a node which has differing input vs. output channel counts, or which
+         is a mixer, is likely to result in a broken graph. */
         
         _engine = AVAudioEngine()
         
         /*  To support the instantiation of arbitrary AVAudioNode subclasses, instances are created
-        externally to the engine, but are not usable until they are attached to the engine via
-        the attachNode method. */
+         externally to the engine, but are not usable until they are attached to the engine via
+         the attachNode method. */
         
         _engine.attach(_sampler)
         _engine.attach(_distortion)
@@ -229,29 +222,29 @@ class AudioEngine: NSObject {
     
     private func makeEngineConnections() {
         /*  The engine will construct a singleton main mixer and connect it to the outputNode on demand,
-        when this property is first accessed. You can then connect additional nodes to the mixer.
-        
-        By default, the mixer's output format (sample rate and channel count) will track the format
-        of the output node. You may however make the connection explicitly with a different format. */
+         when this property is first accessed. You can then connect additional nodes to the mixer.
+         
+         By default, the mixer's output format (sample rate and channel count) will track the format
+         of the output node. You may however make the connection explicitly with a different format. */
         
         // get the engine's optional singleton main mixer node
         let mainMixer = _engine.mainMixerNode
         
         /*  Nodes have input and output buses (AVAudioNodeBus). Use connect:to:fromBus:toBus:format: to
-        establish connections betweeen nodes. Connections are always one-to-one, never one-to-many or
-        many-to-one.
-        
-        Note that any pre-existing connection(s) involving the source's output bus or the
-        destination's input bus will be broken.
-        
-        @method connect:to:fromBus:toBus:format:
-        @param node1 the source node
-        @param node2 the destination node
-        @param bus1 the output bus on the source node
-        @param bus2 the input bus on the destination node
-        @param format if non-null, the format of the source node's output bus is set to this
-        format. In all cases, the format of the destination node's input bus is set to
-        match that of the source node's output bus. */
+         establish connections betweeen nodes. Connections are always one-to-one, never one-to-many or
+         many-to-one.
+         
+         Note that any pre-existing connection(s) involving the source's output bus or the
+         destination's input bus will be broken.
+         
+         @method connect:to:fromBus:toBus:format:
+         @param node1 the source node
+         @param node2 the destination node
+         @param bus1 the output bus on the source node
+         @param bus2 the input bus on the destination node
+         @param format if non-null, the format of the source node's output bus is set to this
+         format. In all cases, the format of the destination node's input bus is set to
+         match that of the source node's output bus. */
         
         let stereoFormat = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 2)
         let playerFormat = _playerLoopBuffer.format
@@ -274,22 +267,39 @@ class AudioEngine: NSObject {
         _engine.connect(_sampler, to: destinationNodes, fromBus: 0, format: stereoFormat)
     }
     
+    private func setNodeDefaults() {
+        // settings for effects units
+        _reverb.wetDryMix = 40
+        _reverb.loadFactoryPreset(.mediumHall)
+        
+        _distortion.loadFactoryPreset(.drumsBitBrush)
+        _distortion.wetDryMix = 100
+        self.samplerEffectVolume = 0.0
+        
+        do {
+            let bankURL = Bundle.main.url(forResource: "gs_instruments", withExtension: "dls")!
+            try _sampler.loadSoundBankInstrument(at: bankURL, program: 0, bankMSB: 0x79, bankLSB: 0)
+        } catch {
+            fatalError("couldn't load SoundBank into sampler node, \(error.localizedDescription)")
+        }
+    }
+    
     private func startEngine() {
         // start the engine
         
         /*  startAndReturnError: calls prepare if it has not already been called since stop.
-        
-        Starts the audio hardware via the AVAudioInputNode and/or AVAudioOutputNode instances in
-        the engine. Audio begins flowing through the engine.
-        
-        This method will return YES for sucess.
-        
-        Reasons for potential failure include:
-        
-        1. There is problem in the structure of the graph. Input can't be routed to output or to a
-        recording tap through converter type nodes.
-        2. An AVAudioSession error.
-        3. The driver failed to start the hardware. */
+         
+         Starts the audio hardware via the AVAudioInputNode and/or AVAudioOutputNode instances in
+         the engine. Audio begins flowing through the engine.
+         
+         This method will return YES for sucess.
+         
+         Reasons for potential failure include:
+         
+         1. There is problem in the structure of the graph. Input can't be routed to output or to a
+         recording tap through converter type nodes.
+         2. An AVAudioSession error.
+         3. The driver failed to start the hardware. */
         
         if !_engine.isRunning {
             do {
@@ -297,22 +307,61 @@ class AudioEngine: NSObject {
             } catch let error as NSError {
                 fatalError("couldn't start engine, \(error.localizedDescription)")
             }
+            NSLog("Started Engine")
         }
+    }
+    
+    //MARK AVAudioSequencer Setup
+    
+    private func createAndSetupSequencer() {
+        /* A collection of MIDI events organized into AVMusicTracks, plus a player to play back the events.
+         NOTE: The sequencer must be created after the engine is initialized and an instrument node is attached and connected
+         */
+        _sequencer = AVAudioSequencer(audioEngine: _engine)
+        
+        // load sequencer loop
+        guard let midiFileURL = Bundle(for: type(of: self)).url(forResource: "bluesyRiff", withExtension: "mid") else {
+            fatalError("couldn't find midi file")
+        }
+        do {
+            try _sequencer!.load(from: midiFileURL, options: [])
+        } catch {
+            fatalError("couldn't load midi file, \(error.localizedDescription)")
+        }
+        
+        // enable looping on all the sequencer tracks
+        _sequencerTrackLengthSeconds = 0
+        _sequencer!.tracks.forEach{ track in
+            track.isLoopingEnabled = true
+            track.numberOfLoops = AVMusicTrackLoopCount.forever.rawValue
+            let trackLengthInSeconds = track.lengthInSeconds
+            if _sequencerTrackLengthSeconds < trackLengthInSeconds {
+                _sequencerTrackLengthSeconds = trackLengthInSeconds
+            }
+        }
+        
+        _sequencer!
+            .prepareToPlay()
+        
     }
     
     //MARK: AVAudioSequencer Methods
     
     func toggleSequencer() {
         if !self.sequencerIsPlaying {
-            self.startEngine()
-            _sequencer?.currentPositionInSeconds = 0.0
             do {
-                try _sequencer?.start()
-            } catch _ as NSError {
+                
+                self.startEngine()
+                _sequencer!.currentPositionInSeconds = 0
+                
+                try _sequencer!.start()
+            } catch {
                 fatalError("couldn't start sequencer")
+                //fatalError("couldn't start sequencer \(error.localizedDescription)")
             }
         } else {
             _sequencer!.stop()
+            NotificationCenter.default.post(name: .ShouldEnginePause, object: nil)
         }
     }
     
@@ -492,6 +541,7 @@ class AudioEngine: NSObject {
             _player.play()
         } else {
             _player.stop()
+            NotificationCenter.default.post(name: .ShouldEnginePause, object: nil)
         }
     }
     
@@ -500,7 +550,7 @@ class AudioEngine: NSObject {
         
         if self.playerIsPlaying {
             _player.stop()
-            self.startEngine() //start the engine if it's not already started
+            self.startEngine() // start the engine if it's not already started
             self.schedulePlayerContent()
             _player.play()
         } else {
@@ -509,7 +559,7 @@ class AudioEngine: NSObject {
     }
     
     func schedulePlayerContent() {
-        //schedule the appropriate content
+        // schedule the appropriate content
         if _isRecordingSelected {
             let recording = self.createAudioFileForPlayback()
             _player.scheduleFile(recording, at: nil, completionHandler: nil)
@@ -533,23 +583,23 @@ class AudioEngine: NSObject {
         // install a tap on the main mixer output bus and write output buffers to file
         
         /*  The method installTapOnBus:bufferSize:format:block: will create a "tap" to record/monitor/observe the output of the node.
-        
-        @param bus
-        the node output bus to which to attach the tap
-        @param bufferSize
-        the requested size of the incoming buffers. The implementation may choose another size.
-        @param format
-        If non-nil, attempts to apply this as the format of the specified output bus. This should
-        only be done when attaching to an output bus which is not connected to another node; an
-        error will result otherwise.
-        The tap and connection formats (if non-nil) on the specified bus should be identical.
-        Otherwise, the latter operation will override any previously set format.
-        Note that for AVAudioOutputNode, tap format must be specified as nil.
-        @param tapBlock
-        a block to be called with audio buffers
-        
-        Only one tap may be installed on any bus. Taps may be safely installed and removed while
-        the engine is running. */
+         
+         @param bus
+         the node output bus to which to attach the tap
+         @param bufferSize
+         the requested size of the incoming buffers. The implementation may choose another size.
+         @param format
+         If non-nil, attempts to apply this as the format of the specified output bus. This should
+         only be done when attaching to an output bus which is not connected to another node; an
+         error will result otherwise.
+         The tap and connection formats (if non-nil) on the specified bus should be identical.
+         Otherwise, the latter operation will override any previously set format.
+         Note that for AVAudioOutputNode, tap format must be specified as nil.
+         @param tapBlock
+         a block to be called with audio buffers
+         
+         Only one tap may be installed on any bus. Taps may be safely installed and removed while
+         the engine is running. */
         
         if _mixerOutputFileURL == nil {
             _mixerOutputFileURL = URL(string: NSTemporaryDirectory() + "mixerOutput.caf")
@@ -586,10 +636,12 @@ class AudioEngine: NSObject {
             _isRecording = false
             
             if self.recordingIsAvailable {
-                //Post a notificaiton that the record is complete
-                //Other nodes/objects can listen to this update accordingly
-                NotificationCenter.default.post(name: Notification.Name(rawValue: kRecordingCompletedNotification), object: nil)
+                // Post a notificaiton that the record is complete
+                // Other nodes/objects can listen to this update accordingly
+                NotificationCenter.default.post(name: .RecordingCompleted, object: nil)
             }
+            
+            NotificationCenter.default.post(name: .ShouldEnginePause, object: nil)
         }
     }
     
@@ -626,20 +678,20 @@ class AudioEngine: NSObject {
         
         // add interruption handler
         NotificationCenter.default.addObserver(self,
-            selector: #selector(AudioEngine.handleInterruption(_:)),
-            name: NSNotification.Name.AVAudioSessionInterruption,
-            object: sessionInstance)
+                                               selector: #selector(AudioEngine.handleInterruption(_:)),
+                                               name: NSNotification.Name.AVAudioSessionInterruption,
+                                               object: sessionInstance)
         
         // we don't do anything special in the route change notification
         NotificationCenter.default.addObserver(self,
-            selector: #selector(AudioEngine.handleRouteChange(_:)),
-            name: NSNotification.Name.AVAudioSessionRouteChange,
-            object: sessionInstance)
+                                               selector: #selector(AudioEngine.handleRouteChange(_:)),
+                                               name: NSNotification.Name.AVAudioSessionRouteChange,
+                                               object: sessionInstance)
         
         NotificationCenter.default.addObserver(self,
-            selector: #selector(AudioEngine.handleMediaServicesReset(_:)),
-            name: NSNotification.Name.AVAudioSessionMediaServicesWereReset,
-            object: sessionInstance)
+                                               selector: #selector(AudioEngine.handleMediaServicesReset(_:)),
+                                               name: NSNotification.Name.AVAudioSessionMediaServicesWereReset,
+                                               object: sessionInstance)
         
         // activate the audio session
         do {
@@ -669,17 +721,13 @@ class AudioEngine: NSObject {
                 try AVAudioSession.sharedInstance().setActive(true)
                 _isSessionInterrupted = false
                 if _isConfigChangePending {
-                    //there is a pending config changed notification
-                    NSLog("Responding to earlier engine config changed notification. Re-wiring connections and starting once again");
+                    // there is a pending config changed notification
+                    NSLog("Responding to earlier engine config changed notification. Re-wiring connections")
                     self.makeEngineConnections()
-                    self.startEngine()
                     
                     _isConfigChangePending = false
-                } else {
-                    // start the engine once again
-                    self.startEngine()
                 }
-            } catch let error as NSError {
+            } catch let error {
                 NSLog("AVAudioSession set active failed with error: \(error.localizedDescription)")
             }
         }
@@ -716,14 +764,16 @@ class AudioEngine: NSObject {
         // if we've received this notification, the media server has been reset
         // re-wire all the connections and start the engine
         NSLog("Media services have been reset!")
-        NSLog("Re-wiring connections and starting once again")
+        NSLog("Re-wiring connections");
         
-        _sequencer = nil; //remove this sequencer since it's linked to the old AVAudioEngine
+        _sequencer = nil               // remove this sequencer since it's linked to the old AVAudioEngine
+        // rebuild the world
         self.initAVAudioSession()
+        self.initAndCreateNodes()
         self.createEngineAndAttachNodes()
         self.makeEngineConnections()
-        self.createAndSetupSequencer() //recreate the sequencer with the new AVAudioEngine
-        self.startEngine()
+        self.createAndSetupSequencer() // recreate the sequencer with the new AVAudioEngine
+        self.setNodeDefaults()
         
         // notify the delegate
         self.delegate?.engineConfigurationHasChanged?()

@@ -14,7 +14,7 @@
                  AVAudioPCMBuffer            *_playerLoopBuffer;
   
              It connects all the nodes, loads the buffers as well as controls the AVAudioEngine object itself.
- */
+*/
 
 #import "AudioEngine.h"
 
@@ -59,49 +59,16 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        NSError *error;
-        BOOL success = NO;
+        
+        _mixerOutputFileURL = nil;
+        _isSessionInterrupted = NO;
+        _isConfigChangePending = NO;
         
         // AVAudioSession setup
         [self initAVAudioSession];
         
-        _isSessionInterrupted = NO;
-        _isConfigChangePending = NO;
-        
-        // create the various nodes
-        
-        /*  AVAudioPlayerNode supports scheduling the playback of AVAudioBuffer instances,
-         or segments of audio files opened via AVAudioFile. Buffers and segments may be
-         scheduled at specific points in time, or to play immediately following preceding segments. */
-        
-        _player = [[AVAudioPlayerNode alloc] init];
-        
-        /* The AVAudioUnitSampler class encapsulates Apple's Sampler Audio Unit. The sampler audio unit can be configured by loading different types of instruments such as an “.aupreset” file, a DLS or SF2 sound bank, an EXS24 instrument, a single audio file or with an array of audio files. The output is a single stereo bus. */
-        
-        NSURL *bankURL = [NSURL fileURLWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"gs_instruments" ofType:@"dls"]];
-        _sampler = [[AVAudioUnitSampler alloc] init];
-        [_sampler loadSoundBankInstrumentAtURL:bankURL program:0 bankMSB:0x79 bankLSB:0 error:&error];
-        
-        /* An AVAudioUnitEffect that implements a multi-stage distortion effect */
-
-        _distortion = [[AVAudioUnitDistortion alloc] init];
-        
-        /*  A reverb simulates the acoustic characteristics of a particular environment.
-         Use the different presets to simulate a particular space and blend it in with
-         the original signal using the wetDryMix parameter. */
-        
-        _reverb = [[AVAudioUnitReverb alloc] init];
-        
-        // load drumloop into a buffer for the playernode
-        NSURL *drumLoopURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"drumLoop" ofType:@"caf"]];
-        AVAudioFile *drumLoopFile = [[AVAudioFile alloc] initForReading:drumLoopURL error:&error];
-        _playerLoopBuffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:[drumLoopFile processingFormat] frameCapacity:(AVAudioFrameCount)[drumLoopFile length]];
-        success = [drumLoopFile readIntoBuffer:_playerLoopBuffer error:&error];
-        NSAssert(success, @"couldn't read drumLoopFile into buffer, %@", [error localizedDescription]);
-        
-        _mixerOutputFileURL = nil;
-        _isRecording = NO;
-        _isRecordingSelected = NO;
+        // create and initalize nodes
+        [self initAndCreateNodes];
         
         // create engine and attach nodes
         [self createEngineAndAttachNodes];
@@ -109,32 +76,48 @@
         // make engine connections
         [self makeEngineConnections];
         
-        //create the audio sequencer
+        // create the audio sequencer
         [self createAndSetupSequencer];
         
-        // settings for effects units
-        _reverb.wetDryMix = 100;
-        [_reverb loadFactoryPreset:AVAudioUnitReverbPresetMediumHall];
+        // set initial default values
+        [self setNodeDefaults];
         
-        [_distortion loadFactoryPreset:AVAudioUnitDistortionPresetDrumsBitBrush];
-        _distortion.wetDryMix = 100;
-        self.samplerEffectVolume = 0.0;
+        NSLog(@"%@", _engine.description);
+        
+        [[NSNotificationCenter defaultCenter] addObserverForName:kShouldEnginePauseNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+            
+            /* pausing stops the audio engine and the audio hardware, but does not deallocate the resources allocated by prepare().
+               When your app does not need to play audio, you should pause or stop the engine (as applicable), to minimize power consumption.
+            */
+            if (!_isSessionInterrupted && !_isConfigChangePending) {
+                if (self.playerIsPlaying || self.sequencerIsPlaying || _isRecording) return;
+                
+                NSLog(@"Pausing Engine");
+                [_engine pause];
+                [_engine reset];
+                
+                // post notification
+                if ([self.delegate respondsToSelector:@selector(engineHasBeenPaused)]) {
+                    [self.delegate engineHasBeenPaused];
+                }
+            }
+        }];
         
         // sign up for notifications from the engine if there's a hardware config change
         [[NSNotificationCenter defaultCenter] addObserverForName:AVAudioEngineConfigurationChangeNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
             
             // if we've received this notification, something has changed and the engine has been stopped
-            // re-wire all the connections and start the engine
+            // re-wire all the connections and reset any state that may have been lost due to nodes being
+            // uninitialized when the engine was stopped
             
             _isConfigChangePending = YES;
             
             if (!_isSessionInterrupted) {
                 NSLog(@"Received a %@ notification!", AVAudioEngineConfigurationChangeNotification);
-                NSLog(@"Re-wiring connections and starting once again");
+                NSLog(@"Re-wiring connections");
                 [self makeEngineConnections];
-                [self startEngine];
-            }
-            else {
+                [self setNodeDefaults];
+            } else {
                 NSLog(@"Session is interrupted, deferring changes");
             }
             
@@ -143,46 +126,59 @@
                 [self.delegate engineConfigurationHasChanged];
             }
         }];
-        
-        // start the engine
-        [self startEngine];
     }
+    
     return self;
 }
 
-#pragma mark AVAudioSequencer Setup
-
-- (void)createAndSetupSequencer
-{
-    BOOL success = NO;
-    NSError *error;
-    /* A collection of MIDI events organized into AVMusicTracks, plus a player to play back the events.
-     NOTE: The sequencer must be created after the engine is initialized and an instrument node is attached and connected
-     */
-    _sequencer = [[AVAudioSequencer alloc] initWithAudioEngine:_engine];
-    
-    // load sequencer loop
-    NSURL *midiFileURL = [NSURL fileURLWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"bluesyRiff" ofType:@"mid"]];
-    NSAssert(midiFileURL, @"couldn't find midi file");
-    success = [_sequencer loadFromURL:midiFileURL options:AVMusicSequenceLoadSMF_PreserveTracks error:&error];
-    NSAssert(success, @"couldn't load midi file, %@", error.localizedDescription);
-    
-    // enable looping on all the sequencer tracks
-    _sequencerTrackLengthSeconds = 0;
-    [_sequencer.tracks enumerateObjectsUsingBlock:^(AVMusicTrack * __nonnull track, NSUInteger idx, BOOL * __nonnull stop) {
-        track.loopingEnabled = true;
-        track.numberOfLoops = AVMusicTrackLoopCountForever;
-        const float trackLengthInSeconds = track.lengthInSeconds;
-        if (_sequencerTrackLengthSeconds < trackLengthInSeconds) {
-            _sequencerTrackLengthSeconds = trackLengthInSeconds;
-        }
-    }];
-    
-    [_sequencer prepareToPlay];
-
-}
-
 #pragma mark AVAudioEngine Setup
+
+- (void)initAndCreateNodes
+{
+    NSError *error;
+    BOOL success = NO;
+    
+    _engine = nil;
+    _sampler = nil;
+    _distortion = nil;
+    _reverb = nil;
+    _player = nil;
+    
+    // create the various nodes
+    
+    /*  AVAudioPlayerNode supports scheduling the playback of AVAudioBuffer instances,
+     or segments of audio files opened via AVAudioFile. Buffers and segments may be
+     scheduled at specific points in time, or to play immediately following preceding segments. */
+    
+    _player = [[AVAudioPlayerNode alloc] init];
+    
+    /* The AVAudioUnitSampler class encapsulates Apple's Sampler Audio Unit.
+     The sampler audio unit can be configured by loading different types of instruments such as an “.aupreset” file,
+     a DLS or SF2 sound bank, an EXS24 instrument, a single audio file or with an array of audio files.
+     The output is a single stereo bus. */
+    
+    _sampler = [[AVAudioUnitSampler alloc] init];
+    
+    /* An AVAudioUnitEffect that implements a multi-stage distortion effect */
+    
+    _distortion = [[AVAudioUnitDistortion alloc] init];
+    
+    /*  A reverb simulates the acoustic characteristics of a particular environment.
+     Use the different presets to simulate a particular space and blend it in with
+     the original signal using the wetDryMix parameter. */
+    
+    _reverb = [[AVAudioUnitReverb alloc] init];
+    
+    // load drumloop into a buffer for the playernode
+    NSURL *drumLoopURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"drumLoop" ofType:@"caf"]];
+    AVAudioFile *drumLoopFile = [[AVAudioFile alloc] initForReading:drumLoopURL error:&error];
+    _playerLoopBuffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:[drumLoopFile processingFormat] frameCapacity:(AVAudioFrameCount)[drumLoopFile length]];
+    success = [drumLoopFile readIntoBuffer:_playerLoopBuffer error:&error];
+    NSAssert(success, @"couldn't read drumLoopFile into buffer, %@", [error localizedDescription]);
+    
+    _isRecording = NO;
+    _isRecordingSelected = NO;
+}
 
 - (void)createEngineAndAttachNodes
 {
@@ -254,11 +250,25 @@
     [_engine connect:_distortion to:mainMixer fromBus:0 toBus:2 format:stereoFormat];
     
     // fan out the sampler to mixer input 1 and distortion effect
-    NSArray<AVAudioConnectionPoint *> *destinationNodes = [NSArray arrayWithObjects:[[AVAudioConnectionPoint alloc] initWithNode:_engine.mainMixerNode bus:1],
-                                                                                    [[AVAudioConnectionPoint alloc] initWithNode:_distortion bus:0],
-                                                                                      nil];
+    NSArray<AVAudioConnectionPoint *> *destinationNodes = [NSArray arrayWithObjects:[[AVAudioConnectionPoint alloc] initWithNode:_engine.mainMixerNode bus:1], [[AVAudioConnectionPoint alloc] initWithNode:_distortion bus:0], nil];
     
     [_engine connect:_sampler toConnectionPoints:destinationNodes fromBus:0 format:stereoFormat];
+}
+
+- (void)setNodeDefaults
+{
+    // settings for effects units
+    _reverb.wetDryMix = 40;
+    [_reverb loadFactoryPreset:AVAudioUnitReverbPresetMediumHall];
+    
+    [_distortion loadFactoryPreset:AVAudioUnitDistortionPresetDrumsBitBrush];
+    _distortion.wetDryMix = 100;
+    self.samplerEffectVolume = 0.0;
+    
+    NSError *error;
+    NSURL *bankURL = [NSURL fileURLWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"gs_instruments" ofType:@"dls"]];
+    BOOL success = [_sampler loadSoundBankInstrumentAtURL:bankURL program:0 bankMSB:0x79 bankLSB:0 error:&error];
+    NSAssert(success, @"couldn't load SoundBank into sampler node, %@", [error localizedDescription]);
 }
 
 - (void)startEngine
@@ -284,21 +294,57 @@
         BOOL success;
         success = [_engine startAndReturnError:&error];
         NSAssert(success, @"couldn't start engine, %@", [error localizedDescription]);
+        NSLog(@"Started Engine");
     }
+}
+
+#pragma mark AVAudioSequencer Setup
+
+- (void)createAndSetupSequencer
+{
+    BOOL success = NO;
+    NSError *error;
+    /* A collection of MIDI events organized into AVMusicTracks, plus a player to play back the events.
+     NOTE: The sequencer must be created after the engine is initialized and an instrument node is attached and connected
+     */
+    _sequencer = [[AVAudioSequencer alloc] initWithAudioEngine:_engine];
+    
+    // load sequencer loop
+    NSURL *midiFileURL = [NSURL fileURLWithPath:[[NSBundle bundleForClass:[self class]] pathForResource:@"bluesyRiff" ofType:@"mid"]];
+    NSAssert(midiFileURL, @"couldn't find midi file");
+    success = [_sequencer loadFromURL:midiFileURL options:AVMusicSequenceLoadSMF_PreserveTracks error:&error];
+    NSAssert(success, @"couldn't load midi file, %@", error.localizedDescription);
+    
+    // enable looping on all the sequencer tracks
+    _sequencerTrackLengthSeconds = 0;
+    [_sequencer.tracks enumerateObjectsUsingBlock:^(AVMusicTrack * __nonnull track, NSUInteger idx, BOOL * __nonnull stop) {
+        track.loopingEnabled = true;
+        track.numberOfLoops = AVMusicTrackLoopCountForever;
+        const float trackLengthInSeconds = track.lengthInSeconds;
+        if (_sequencerTrackLengthSeconds < trackLengthInSeconds) {
+            _sequencerTrackLengthSeconds = trackLengthInSeconds;
+        }
+    }];
+    
+    [_sequencer prepareToPlay];
+    
 }
 
 #pragma mark AVAudioSequencer Methods
 
 - (void)toggleSequencer {
     if (!self.sequencerIsPlaying) {
-        [self startEngine];
         NSError *error;
-        BOOL success = NO;
+
+        [self startEngine];
         [_sequencer setCurrentPositionInSeconds:0];
-        success = [_sequencer startAndReturnError:&error];
+        
+        BOOL success = [_sequencer startAndReturnError:&error];
         NSAssert(success, @"couldn't start sequencer", [error localizedDescription]);
-    } else
+    } else {
         [_sequencer stop];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kShouldEnginePauseNotification object:nil];
+    }
 }
 
 - (BOOL)sequencerIsPlaying
@@ -480,6 +526,7 @@
     else
     {
         [_player stop];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kShouldEnginePauseNotification object:nil];
     }
 }
 
@@ -490,7 +537,7 @@
     if (self.playerIsPlaying)
     {
         [_player stop];
-        [self startEngine]; //start the engine if it's not already started
+        [self startEngine]; // start the engine if it's not already started
         [self schedulePlayerContent];
         [_player play];
     }
@@ -502,7 +549,7 @@
 
 - (void)schedulePlayerContent
 {
-    //schedule the appropriate content
+    // schedule the appropriate content
     if (_isRecordingSelected)
     {
         AVAudioFile *recording = [self createAudioFileForPlayback];
@@ -574,10 +621,12 @@
         _isRecording = NO;
         
         if (self.recordingIsAvailable) {            
-            //Post a notificaiton that the record is complete
-            //Other nodes/objects can listen to this update accordingly
+            // Post a notificaiton that the record is complete
+            // Other nodes/objects can listen to this update accordingly
             [[NSNotificationCenter defaultCenter] postNotificationName:kRecordingCompletedNotification object:nil];
         }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:kShouldEnginePauseNotification object:nil];
     }
 }
 
@@ -653,16 +702,11 @@
         else {
             _isSessionInterrupted = NO;
             if (_isConfigChangePending) {
-                //there is a pending config changed notification
-                NSLog(@"Responding to earlier engine config changed notification. Re-wiring connections and starting once again");
+                // there is a pending config changed notification
+                NSLog(@"Responding to earlier engine config changed notification. Re-wiring connections");
                 [self makeEngineConnections];
-                [self startEngine];
                 
                 _isConfigChangePending = NO;
-            }
-            else {
-                // start the engine once again
-                [self startEngine];
             }
         }
     }
@@ -707,14 +751,16 @@
     // if we've received this notification, the media server has been reset
     // re-wire all the connections and start the engine
     NSLog(@"Media services have been reset!");
-    NSLog(@"Re-wiring connections and starting once again");
+    NSLog(@"Re-wiring connections");
 
-    _sequencer = nil; //remove this sequencer since it's linked to the old AVAudioEngine
+    _sequencer = nil;               // remove this sequencer since it's linked to the old AVAudioEngine
+    // rebuild the world
     [self initAVAudioSession];
+    [self initAndCreateNodes];
     [self createEngineAndAttachNodes];
     [self makeEngineConnections];
-    [self createAndSetupSequencer]; //recreate the sequencer with the new AVAudioEngine
-    [self startEngine];
+    [self createAndSetupSequencer]; // recreate the sequencer with the new AVAudioEngine
+    [self setNodeDefaults];
 
     // notify the delegate
     if ([self.delegate respondsToSelector:@selector(engineConfigurationHasChanged)]) {

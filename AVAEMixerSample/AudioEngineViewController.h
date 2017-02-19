@@ -6,7 +6,7 @@
     AudioEngineViewController hosts the AudioEngine UI as well as the UI for each individual node
      
                 This controller is linked to a size-classes storyboard that supports both iPhone and iPad UI
- */
+*/
 
 @import UIKit;
 

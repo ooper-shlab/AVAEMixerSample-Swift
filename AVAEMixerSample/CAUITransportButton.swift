@@ -17,7 +17,7 @@
          These buttons resize themselves dynamically at runtime so that their bounds is a minimum of 44 x 44 pts
          in order to make them easy to press.
          The button image will draw at the original size specified in the storyboard
- */
+*/
 
 import UIKit
 

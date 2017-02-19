@@ -18,14 +18,16 @@
 
 @import Foundation;
 
-//Other nodes/objects can listen to this to determine when the user finishes a recording
+// Other nodes/objects can listen to this to determine when the user finishes a recording
 static NSString *kRecordingCompletedNotification = @"RecordingCompletedNotification";
 
-@protocol AudioEngineDelegate <NSObject>
+static NSString *kShouldEnginePauseNotification = @"kShouldEnginePauseNotification";
 
+@protocol AudioEngineDelegate <NSObject>
 @optional
 - (void)engineWasInterrupted;
 - (void)engineConfigurationHasChanged;
+- (void)engineHasBeenPaused;
 - (void)mixerOutputFilePlayerHasStopped;
 @end
 

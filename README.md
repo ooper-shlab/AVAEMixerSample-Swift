@@ -32,6 +32,11 @@ iOS 10.x
 * (modified) Useage of a single AVAudioPlayerNode that toggles between a recorded AVAudioFile and a AVAudioPCMBuffer
 
 2.1 Minor update:
-* (modified) Explicitly use the buffer format as the connection format for the player to reverb & reverb to mainMixer, to make it clear that these formats must match. 
+* (modified) Explicitly use the buffer format as the connection format for the player to reverb & reverb to mainMixer, to make it clear that these formats must match.
+
+2.2 Minor update:
+* (new) Audio parameter views on iPhone now have a 'Dismiss' button in addition to 'Swipe down' to dismiss.
+* (modified) AVAudioEngine is now paused when nothing is playing or being recorded.
+* (modified) Refactored some methods to support pausing and to ensure proper initialization after reset or engine reconfiguration.
 
 Copyright (C) 2015-2017 Apple Inc. All rights reserved.

@@ -7,7 +7,7 @@
                     It contains -
                         A reference to the AudioEngine
                         Basic Views for displaying parameters. Subclasses can provide their own views for customization
- */
+*/
 
 @import UIKit;
 
@@ -20,6 +20,7 @@
 @property (strong) AudioEngine *audioEngine;
 
 @property (weak, nonatomic) IBOutlet UIView *titleView;
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UIStackView *stackView;
 @property (weak, nonatomic) IBOutlet CAAVParameterView *parameterView;
 

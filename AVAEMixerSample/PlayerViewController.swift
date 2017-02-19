@@ -32,7 +32,7 @@ class PlayerViewController: AudioViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        NotificationCenter.default.addObserver(self, selector: #selector(PlayerViewController.enableToggle(_:)), name: NSNotification.Name(rawValue: kRecordingCompletedNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(PlayerViewController.enableToggle(_:)), name: .RecordingCompleted, object: nil)
     }
     
     override func didReceiveMemoryWarning() {
