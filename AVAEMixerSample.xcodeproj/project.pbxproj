@@ -15,25 +15,26 @@
 		B12C8E091BCE28B000DA5448 /* AVAE.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B12C8E081BCE28B000DA5448 /* AVAE.storyboard */; };
 		B164A8B41BE19225003A6424 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B164A8B31BE19225003A6424 /* LaunchScreen.storyboard */; };
 		B1920DE11BCCCF7D00F59C73 /* drumLoop.caf in Resources */ = {isa = PBXBuildFile; fileRef = B1920DE01BCCCF7D00F59C73 /* drumLoop.caf */; };
-		D706F5361E59BA810023A8D5 /* CAAVAudioUnitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F5331E59BA810023A8D5 /* CAAVAudioUnitView.swift */; };
-		D706F5371E59BA810023A8D5 /* CAAVParameterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F5341E59BA810023A8D5 /* CAAVParameterView.swift */; };
-		D706F5381E59BA810023A8D5 /* CAUITransportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F5351E59BA810023A8D5 /* CAUITransportButton.swift */; };
-		D706F5401E59BAB20023A8D5 /* AudioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F5391E59BAB20023A8D5 /* AudioViewController.swift */; };
-		D706F5411E59BAB20023A8D5 /* DistortionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F53A1E59BAB20023A8D5 /* DistortionViewController.swift */; };
-		D706F5421E59BAB20023A8D5 /* InstrumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F53B1E59BAB20023A8D5 /* InstrumentViewController.swift */; };
-		D706F5431E59BAB20023A8D5 /* MixerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F53C1E59BAB20023A8D5 /* MixerViewController.swift */; };
-		D706F5441E59BAB20023A8D5 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F53D1E59BAB20023A8D5 /* PlayerViewController.swift */; };
-		D706F5451E59BAB20023A8D5 /* ReverbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F53E1E59BAB20023A8D5 /* ReverbViewController.swift */; };
-		D706F5461E59BAB20023A8D5 /* SequencerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F53F1E59BAB20023A8D5 /* SequencerViewController.swift */; };
-		D706F54A1E59BADF0023A8D5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F5471E59BADF0023A8D5 /* AppDelegate.swift */; };
-		D706F54B1E59BADF0023A8D5 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F5481E59BADF0023A8D5 /* AudioEngine.swift */; };
-		D706F54C1E59BADF0023A8D5 /* AudioEngineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D706F5491E59BADF0023A8D5 /* AudioEngineViewController.swift */; };
+		D76108E21EC883B900666AC3 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108DF1EC883B900666AC3 /* AudioEngine.swift */; };
+		D76108E31EC883B900666AC3 /* AudioEngineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108E01EC883B900666AC3 /* AudioEngineViewController.swift */; };
+		D76108E41EC883B900666AC3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108E11EC883B900666AC3 /* AppDelegate.swift */; };
+		D76108EC1EC883E600666AC3 /* AudioViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108E51EC883E600666AC3 /* AudioViewController.swift */; };
+		D76108ED1EC883E600666AC3 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108E61EC883E600666AC3 /* PlayerViewController.swift */; };
+		D76108EE1EC883E600666AC3 /* DistortionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108E71EC883E600666AC3 /* DistortionViewController.swift */; };
+		D76108EF1EC883E600666AC3 /* InstrumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108E81EC883E600666AC3 /* InstrumentViewController.swift */; };
+		D76108F01EC883E600666AC3 /* MixerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108E91EC883E600666AC3 /* MixerViewController.swift */; };
+		D76108F11EC883E600666AC3 /* ReverbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108EA1EC883E600666AC3 /* ReverbViewController.swift */; };
+		D76108F21EC883E600666AC3 /* SequencerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108EB1EC883E600666AC3 /* SequencerViewController.swift */; };
+		D76108F61EC8842E00666AC3 /* CAAVParameterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108F31EC8842E00666AC3 /* CAAVParameterView.swift */; };
+		D76108F81EC8842E00666AC3 /* CAAVAudioUnitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108F51EC8842E00666AC3 /* CAAVAudioUnitView.swift */; };
+		D76108F91EC8865900666AC3 /* CAUITransportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76108F41EC8842E00666AC3 /* CAUITransportButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		2B24B3751E1DCC600081C7BC /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		4CEA32AE1912EDDE00ACCD65 /* AVAEMixerSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVAEMixerSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CEA32B21912EDDE00ACCD65 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4CEA32B31912EDDE00ACCD65 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4CEA32C31912EDDE00ACCD65 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		4CEA32DD1912EEA100ACCD65 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		821725131B0D4792002743AE /* gs_instruments.dls */ = {isa = PBXFileReference; lastKnownFileType = file; path = gs_instruments.dls; sourceTree = "<group>"; };
@@ -42,21 +43,21 @@
 		B12C8E081BCE28B000DA5448 /* AVAE.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = AVAE.storyboard; sourceTree = "<group>"; };
 		B164A8B31BE19225003A6424 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B1920DE01BCCCF7D00F59C73 /* drumLoop.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = drumLoop.caf; sourceTree = "<group>"; };
-		D706F52F1E59BA1E0023A8D5 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		D706F5301E59BA1E0023A8D5 /* README2.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README2.md; sourceTree = "<group>"; };
-		D706F5331E59BA810023A8D5 /* CAAVAudioUnitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAAVAudioUnitView.swift; sourceTree = "<group>"; };
-		D706F5341E59BA810023A8D5 /* CAAVParameterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAAVParameterView.swift; sourceTree = "<group>"; };
-		D706F5351E59BA810023A8D5 /* CAUITransportButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAUITransportButton.swift; sourceTree = "<group>"; };
-		D706F5391E59BAB20023A8D5 /* AudioViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioViewController.swift; sourceTree = "<group>"; };
-		D706F53A1E59BAB20023A8D5 /* DistortionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DistortionViewController.swift; sourceTree = "<group>"; };
-		D706F53B1E59BAB20023A8D5 /* InstrumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentViewController.swift; sourceTree = "<group>"; };
-		D706F53C1E59BAB20023A8D5 /* MixerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MixerViewController.swift; sourceTree = "<group>"; };
-		D706F53D1E59BAB20023A8D5 /* PlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
-		D706F53E1E59BAB20023A8D5 /* ReverbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReverbViewController.swift; sourceTree = "<group>"; };
-		D706F53F1E59BAB20023A8D5 /* SequencerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequencerViewController.swift; sourceTree = "<group>"; };
-		D706F5471E59BADF0023A8D5 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D706F5481E59BADF0023A8D5 /* AudioEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
-		D706F5491E59BADF0023A8D5 /* AudioEngineViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioEngineViewController.swift; sourceTree = "<group>"; };
+		D76108DB1EC8835600666AC3 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		D76108DC1EC8835600666AC3 /* README2.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README2.md; sourceTree = "<group>"; };
+		D76108DF1EC883B900666AC3 /* AudioEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		D76108E01EC883B900666AC3 /* AudioEngineViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioEngineViewController.swift; sourceTree = "<group>"; };
+		D76108E11EC883B900666AC3 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		D76108E51EC883E600666AC3 /* AudioViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioViewController.swift; sourceTree = "<group>"; };
+		D76108E61EC883E600666AC3 /* PlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
+		D76108E71EC883E600666AC3 /* DistortionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DistortionViewController.swift; sourceTree = "<group>"; };
+		D76108E81EC883E600666AC3 /* InstrumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentViewController.swift; sourceTree = "<group>"; };
+		D76108E91EC883E600666AC3 /* MixerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MixerViewController.swift; sourceTree = "<group>"; };
+		D76108EA1EC883E600666AC3 /* ReverbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReverbViewController.swift; sourceTree = "<group>"; };
+		D76108EB1EC883E600666AC3 /* SequencerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SequencerViewController.swift; sourceTree = "<group>"; };
+		D76108F31EC8842E00666AC3 /* CAAVParameterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAAVParameterView.swift; sourceTree = "<group>"; };
+		D76108F41EC8842E00666AC3 /* CAUITransportButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAUITransportButton.swift; sourceTree = "<group>"; };
+		D76108F51EC8842E00666AC3 /* CAAVAudioUnitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CAAVAudioUnitView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,9 +75,9 @@
 		4CEA32A41912EDDE00ACCD65 = {
 			isa = PBXGroup;
 			children = (
-				D706F52F1E59BA1E0023A8D5 /* LICENSE.txt */,
+				D76108DB1EC8835600666AC3 /* LICENSE.txt */,
 				2B24B3751E1DCC600081C7BC /* README.md */,
-				D706F5301E59BA1E0023A8D5 /* README2.md */,
+				D76108DC1EC8835600666AC3 /* README2.md */,
 				4CEA32B01912EDDE00ACCD65 /* AVAEMixerSample */,
 				821A3100196FB7CC00F56B5F /* Frameworks */,
 				4CEA32AF1912EDDE00ACCD65 /* Products */,
@@ -94,9 +95,9 @@
 		4CEA32B01912EDDE00ACCD65 /* AVAEMixerSample */ = {
 			isa = PBXGroup;
 			children = (
-				D706F5471E59BADF0023A8D5 /* AppDelegate.swift */,
-				D706F5481E59BADF0023A8D5 /* AudioEngine.swift */,
-				D706F5491E59BADF0023A8D5 /* AudioEngineViewController.swift */,
+				D76108E11EC883B900666AC3 /* AppDelegate.swift */,
+				D76108DF1EC883B900666AC3 /* AudioEngine.swift */,
+				D76108E01EC883B900666AC3 /* AudioEngineViewController.swift */,
 				B1EF14C61BCC802600940E31 /* AudioViewControllers */,
 				B1FF64871BCF3F3100FAAE72 /* CA Elements */,
 				B12C8E081BCE28B000DA5448 /* AVAE.storyboard */,
@@ -115,6 +116,7 @@
 				B1920DE01BCCCF7D00F59C73 /* drumLoop.caf */,
 				8271354C192EA4D60056B240 /* marimbaLoop.caf */,
 				4CEA32B21912EDDE00ACCD65 /* Info.plist */,
+				4CEA32B31912EDDE00ACCD65 /* main.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -130,13 +132,13 @@
 		B1EF14C61BCC802600940E31 /* AudioViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				D706F5391E59BAB20023A8D5 /* AudioViewController.swift */,
-				D706F53D1E59BAB20023A8D5 /* PlayerViewController.swift */,
-				D706F53F1E59BAB20023A8D5 /* SequencerViewController.swift */,
-				D706F53B1E59BAB20023A8D5 /* InstrumentViewController.swift */,
-				D706F53E1E59BAB20023A8D5 /* ReverbViewController.swift */,
-				D706F53A1E59BAB20023A8D5 /* DistortionViewController.swift */,
-				D706F53C1E59BAB20023A8D5 /* MixerViewController.swift */,
+				D76108E51EC883E600666AC3 /* AudioViewController.swift */,
+				D76108E61EC883E600666AC3 /* PlayerViewController.swift */,
+				D76108EB1EC883E600666AC3 /* SequencerViewController.swift */,
+				D76108E81EC883E600666AC3 /* InstrumentViewController.swift */,
+				D76108EA1EC883E600666AC3 /* ReverbViewController.swift */,
+				D76108E71EC883E600666AC3 /* DistortionViewController.swift */,
+				D76108E91EC883E600666AC3 /* MixerViewController.swift */,
 			);
 			name = AudioViewControllers;
 			sourceTree = "<group>";
@@ -144,9 +146,9 @@
 		B1FF64871BCF3F3100FAAE72 /* CA Elements */ = {
 			isa = PBXGroup;
 			children = (
-				D706F5351E59BA810023A8D5 /* CAUITransportButton.swift */,
-				D706F5331E59BA810023A8D5 /* CAAVAudioUnitView.swift */,
-				D706F5341E59BA810023A8D5 /* CAAVParameterView.swift */,
+				D76108F41EC8842E00666AC3 /* CAUITransportButton.swift */,
+				D76108F51EC8842E00666AC3 /* CAAVAudioUnitView.swift */,
+				D76108F31EC8842E00666AC3 /* CAAVParameterView.swift */,
 			);
 			name = "CA Elements";
 			sourceTree = "<group>";
@@ -192,7 +194,7 @@
 				ORGANIZATIONNAME = "Apple Inc.";
 				TargetAttributes = {
 					4CEA32AD1912EDDE00ACCD65 = {
-						LastSwiftMigration = 0820;
+						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -237,19 +239,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D706F5451E59BAB20023A8D5 /* ReverbViewController.swift in Sources */,
-				D706F5461E59BAB20023A8D5 /* SequencerViewController.swift in Sources */,
-				D706F5381E59BA810023A8D5 /* CAUITransportButton.swift in Sources */,
-				D706F5431E59BAB20023A8D5 /* MixerViewController.swift in Sources */,
-				D706F5421E59BAB20023A8D5 /* InstrumentViewController.swift in Sources */,
-				D706F5401E59BAB20023A8D5 /* AudioViewController.swift in Sources */,
-				D706F54B1E59BADF0023A8D5 /* AudioEngine.swift in Sources */,
-				D706F5441E59BAB20023A8D5 /* PlayerViewController.swift in Sources */,
-				D706F54A1E59BADF0023A8D5 /* AppDelegate.swift in Sources */,
-				D706F5361E59BA810023A8D5 /* CAAVAudioUnitView.swift in Sources */,
-				D706F54C1E59BADF0023A8D5 /* AudioEngineViewController.swift in Sources */,
-				D706F5371E59BA810023A8D5 /* CAAVParameterView.swift in Sources */,
-				D706F5411E59BAB20023A8D5 /* DistortionViewController.swift in Sources */,
+				D76108F81EC8842E00666AC3 /* CAAVAudioUnitView.swift in Sources */,
+				D76108F91EC8865900666AC3 /* CAUITransportButton.swift in Sources */,
+				D76108F11EC883E600666AC3 /* ReverbViewController.swift in Sources */,
+				D76108F21EC883E600666AC3 /* SequencerViewController.swift in Sources */,
+				D76108EF1EC883E600666AC3 /* InstrumentViewController.swift in Sources */,
+				D76108F01EC883E600666AC3 /* MixerViewController.swift in Sources */,
+				D76108E21EC883B900666AC3 /* AudioEngine.swift in Sources */,
+				D76108EE1EC883E600666AC3 /* DistortionViewController.swift in Sources */,
+				D76108ED1EC883E600666AC3 /* PlayerViewController.swift in Sources */,
+				D76108E31EC883B900666AC3 /* AudioEngineViewController.swift in Sources */,
+				D76108E41EC883B900666AC3 /* AppDelegate.swift in Sources */,
+				D76108EC1EC883E600666AC3 /* AudioViewController.swift in Sources */,
+				D76108F61EC8842E00666AC3 /* CAAVParameterView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

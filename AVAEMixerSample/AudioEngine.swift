@@ -760,15 +760,33 @@ class AudioEngine: NSObject {
         NSLog("%@", routeDescription)
     }
     
+    // https://developer.apple.com/library/content/qa/qa1749/_index.html
     @objc func handleMediaServicesReset(_ notification: Notification) {
         // if we've received this notification, the media server has been reset
         // re-wire all the connections and start the engine
         NSLog("Media services have been reset!")
-        NSLog("Re-wiring connections");
+        NSLog("Re-wiring connections")
         
-        _sequencer = nil               // remove this sequencer since it's linked to the old AVAudioEngine
+        _sequencer = nil;   // remove this sequencer since it's linked to the old AVAudioEngine
+        
+        // Re-configure the audio session per QA1749
+        let sessionInstance = AVAudioSession.sharedInstance()
+        
+        // set the session category
+        do {
+            try sessionInstance.setCategory(AVAudioSessionCategoryPlayback)
+        } catch let error {
+            NSLog("Error setting AVAudioSession category after media services reset \(error.localizedDescription)\n")
+        }
+        
+        // set the session active
+        do {
+            try sessionInstance.setActive(true)
+        } catch let error {
+            NSLog("Error activating AVAudioSession after media services reset \(error.localizedDescription)\n")
+        }
+        
         // rebuild the world
-        self.initAVAudioSession()
         self.initAndCreateNodes()
         self.createEngineAndAttachNodes()
         self.makeEngineConnections()

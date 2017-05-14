@@ -746,6 +746,7 @@
     NSLog(@"%@", routeDescription);
 }
 
+// https://developer.apple.com/library/content/qa/qa1749/_index.html
 - (void)handleMediaServicesReset:(NSNotification *)notification
 {
     // if we've received this notification, the media server has been reset
@@ -753,9 +754,21 @@
     NSLog(@"Media services have been reset!");
     NSLog(@"Re-wiring connections");
 
-    _sequencer = nil;               // remove this sequencer since it's linked to the old AVAudioEngine
+    _sequencer = nil;   // remove this sequencer since it's linked to the old AVAudioEngine
+    
+    // Re-configure the audio session per QA1749
+    AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
+    NSError *error;
+    
+    // set the session category
+    bool success = [sessionInstance setCategory:AVAudioSessionCategoryPlayback error:&error];
+    if (!success) NSLog(@"Error setting AVAudioSession category after media services reset %@\n", [error localizedDescription]);
+    
+    // set the session active
+    success = [sessionInstance setActive:YES error:&error];
+    if (!success) NSLog(@"Error activating AVAudioSession after media services reset %@\n", [error localizedDescription]);
+
     // rebuild the world
-    [self initAVAudioSession];
     [self initAndCreateNodes];
     [self createEngineAndAttachNodes];
     [self makeEngineConnections];

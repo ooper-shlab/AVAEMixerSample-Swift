@@ -39,4 +39,7 @@ iOS 10.x
 * (modified) AVAudioEngine is now paused when nothing is playing or being recorded.
 * (modified) Refactored some methods to support pausing and to ensure proper initialization after reset or engine reconfiguration.
 
+2.3 Minor update:
+* (modified) handleMediaServicesReset now configures AVAudioSession per QA1749
+
 Copyright (C) 2015-2017 Apple Inc. All rights reserved.

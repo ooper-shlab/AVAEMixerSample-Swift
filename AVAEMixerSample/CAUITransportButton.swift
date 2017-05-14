@@ -109,7 +109,7 @@ class CAUITransportButton: UIButton {
     }
     
     private func toRadians(_ degrees: CGFloat) -> CGFloat {
-        return (degrees * CGFloat(M_PI))/180.0
+        return (degrees * .pi)/180.0
     }
     
     //MARK: - Property methods
