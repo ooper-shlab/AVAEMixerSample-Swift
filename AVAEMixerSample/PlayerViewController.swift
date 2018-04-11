@@ -32,7 +32,7 @@ class PlayerViewController: AudioViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        NotificationCenter.default.addObserver(self, selector: #selector(PlayerViewController.enableToggle(_:)), name: .RecordingCompleted, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.enableToggle(_:)), name: .RecordingCompleted, object: nil)
     }
     
     override func didReceiveMemoryWarning() {
@@ -44,7 +44,7 @@ class PlayerViewController: AudioViewController {
         self.audioEngine?.toggleBuffer(sender.selectedSegmentIndex != 0)
     }
     
-    @IBAction func togglePlay(_: AnyObject) {
+    @IBAction func togglePlay(_: Any) {
         self.audioEngine?.togglePlayer()
         self.styleButton(playerPlayButton, isPlaying: self.audioEngine?.playerIsPlaying ?? false)
     }

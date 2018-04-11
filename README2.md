@@ -1,4 +1,4 @@
-#Using AVAudioEngine for Playback, Mixing and Recording
+# Using AVAudioEngine for Playback, Mixing and Recording
 
 Translated by OOPer in cooperation with shlab.jp, on 2016/1/30.
 
@@ -14,4 +14,4 @@ REQUIREMENTS
 ------------
 
 ### BUILD ###
-iOS 10 SDK, Xcode 8.3.2
+iOS 11 SDK, Xcode 9.3

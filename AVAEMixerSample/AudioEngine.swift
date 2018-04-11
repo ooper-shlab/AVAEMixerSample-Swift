@@ -133,7 +133,7 @@ class AudioEngine: NSObject {
             self._isConfigChangePending = true
             
             if !self._isSessionInterrupted {
-                NSLog("Received a \(NSNotification.Name.AVAudioEngineConfigurationChange) notification!");
+                NSLog("Received a \(Notification.Name.AVAudioEngineConfigurationChange) notification!");
                 NSLog("Re-wiring connections");
                 self.makeEngineConnections()
                 self.setNodeDefaults()
@@ -304,7 +304,7 @@ class AudioEngine: NSObject {
         if !_engine.isRunning {
             do {
                 try _engine.start()
-            } catch let error as NSError {
+            } catch let error {
                 fatalError("couldn't start engine, \(error.localizedDescription)")
             }
             NSLog("Started Engine")
@@ -572,7 +572,7 @@ class AudioEngine: NSObject {
         do {
             let recording = try AVAudioFile(forReading: _mixerOutputFileURL!)
             return recording
-        } catch let error as NSError {
+        } catch let error {
             fatalError("couldn't create AVAudioFile, \(error.localizedDescription)")
         }
     }
@@ -602,6 +602,7 @@ class AudioEngine: NSObject {
          the engine is running. */
         
         if _mixerOutputFileURL == nil {
+            //_mixerOutputFileURL = FileManager.default.temporaryDirectory.appendingPathComponent("mixerOutput.caf")
             _mixerOutputFileURL = URL(string: NSTemporaryDirectory() + "mixerOutput.caf")
         }
         
@@ -609,7 +610,7 @@ class AudioEngine: NSObject {
         let mixerOutputFile: AVAudioFile
         do {
             mixerOutputFile = try AVAudioFile(forWriting: _mixerOutputFileURL!, settings: mainMixer.outputFormat(forBus: 0).settings)
-        } catch let error as NSError {
+        } catch let error {
             fatalError("mixerOutputFile is nil, \(error.localizedDescription)")
         }
         
@@ -620,10 +621,8 @@ class AudioEngine: NSObject {
             // IMPORTANT: The buffer format MUST match the file's processing format which is why outputFormatForBus: was used when creating the AVAudioFile object above
             do {
                 try mixerOutputFile.write(from: buffer)
-            } catch let error as NSError {
+            } catch let error {
                 fatalError("error writing buffer data to file, \(error.localizedDescription)")
-            } catch _ {
-                fatalError()
             }
         }
         _isRecording = true
@@ -658,45 +657,45 @@ class AudioEngine: NSObject {
         // set the session category
         do {
             try sessionInstance.setCategory(AVAudioSessionCategoryPlayback)
-        } catch let error as NSError {
+        } catch let error {
             NSLog("Error setting AVAudioSession category! \(error.localizedDescription)\n")
         }
         
         let hwSampleRate = 44100.0
         do {
             try sessionInstance.setPreferredSampleRate(hwSampleRate)
-        } catch let error as NSError {
+        } catch let error {
             NSLog("Error setting preferred sample rate! \(error.localizedDescription)\n")
         }
         
         let ioBufferDuration: TimeInterval = 0.0029
         do {
             try sessionInstance.setPreferredIOBufferDuration(ioBufferDuration)
-        } catch let error as NSError {
+        } catch let error {
             NSLog("Error setting preferred io buffer duration! \(error.localizedDescription)\n")
         }
         
         // add interruption handler
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(AudioEngine.handleInterruption(_:)),
-                                               name: NSNotification.Name.AVAudioSessionInterruption,
+                                               selector: #selector(self.handleInterruption(_:)),
+                                               name: Notification.Name.AVAudioSessionInterruption,
                                                object: sessionInstance)
         
         // we don't do anything special in the route change notification
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(AudioEngine.handleRouteChange(_:)),
-                                               name: NSNotification.Name.AVAudioSessionRouteChange,
+                                               selector: #selector(self.handleRouteChange(_:)),
+                                               name: Notification.Name.AVAudioSessionRouteChange,
                                                object: sessionInstance)
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(AudioEngine.handleMediaServicesReset(_:)),
-                                               name: NSNotification.Name.AVAudioSessionMediaServicesWereReset,
+                                               selector: #selector(self.handleMediaServicesReset(_:)),
+                                               name: Notification.Name.AVAudioSessionMediaServicesWereReset,
                                                object: sessionInstance)
         
         // activate the audio session
         do {
             try sessionInstance.setActive(true)
-        } catch let error as NSError {
+        } catch let error {
             NSLog("Error setting session active! \(error.localizedDescription)\n")
         }
     }

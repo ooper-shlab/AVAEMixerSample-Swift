@@ -38,7 +38,7 @@ class AudioViewController: UIViewController {
         if UIDevice.current.userInterfaceIdiom == .pad {
             self.stackView.addArrangedSubview(self.parameterView)
         } else {
-            let titleViewTap = UITapGestureRecognizer(target: self, action: #selector(AudioViewController.showParameterView(_:)))
+            let titleViewTap = UITapGestureRecognizer(target: self, action: #selector(self.showParameterView(_:)))
             self.titleView.addGestureRecognizer(titleViewTap)
             
             let swipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeRecognizer))

@@ -50,7 +50,7 @@ class SequencerViewController: AudioViewController {
     private func startTimer() {
         _sequencerPositionSliderUpdateTimer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: 0), queue: DispatchQueue.main)
         if let sequencerPositionSliderUpdateTimer = _sequencerPositionSliderUpdateTimer {
-            sequencerPositionSliderUpdateTimer.scheduleRepeating(deadline: .now(), interval: 0.1 * Double(NSEC_PER_SEC), leeway: .nanoseconds(0))
+            sequencerPositionSliderUpdateTimer.schedule(deadline: .now(), repeating: 0.1 * Double(NSEC_PER_SEC), leeway: .nanoseconds(0))
             sequencerPositionSliderUpdateTimer.setEventHandler {
                 self.sequencerPositionSlider.value = Float(self.audioEngine?.sequencerCurrentPosition ?? 0.0)
             }
@@ -65,7 +65,7 @@ class SequencerViewController: AudioViewController {
         }
     }
     
-    @IBAction func togglePlaySequencer(_: AnyObject) {
+    @IBAction func togglePlaySequencer(_: Any) {
         self.audioEngine?.toggleSequencer()
         
         self.styleButton(sequencerPlayButton, isPlaying: self.audioEngine?.sequencerIsPlaying ?? false)
@@ -75,7 +75,7 @@ class SequencerViewController: AudioViewController {
             self.stopTimer()
         }
     }
-    @IBAction func sequencerPositionSliderTouchDown(_: AnyObject) {
+    @IBAction func sequencerPositionSliderTouchDown(_: Any) {
         if self.audioEngine?.sequencerIsPlaying ?? false {
             self.stopTimer()
         }
